@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5f; // Speed of the character
+    private float adjustedMoveSpeed = 5f; // adjusted speed to slow down when attacking
     public Transform playerCamera; // Reference to the player camera
     private Vector2 moveInput; // Store movement input
     private PlayerControls playerControls;
@@ -28,9 +29,29 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate() // Use FixedUpdate for physics calculations
     {
+        handleAttacking();
         MoveCharacter();
     }
 
+    private void handleAttacking()
+    {
+        animator.SetBool("Attacking", Input.GetMouseButton(0));
+        //animator.SetBool("Defending", Input.GetMouseButton(1));
+        if (Input.GetMouseButton(0))
+        {
+            adjustedMoveSpeed = moveSpeed * 0.6f;
+        }
+        //else if (Input.GetMouseButton(1))
+        //{
+        //    adjustedMoveSpeed = moveSpeed * 0.3f;
+        //}
+        else
+        {
+            adjustedMoveSpeed = moveSpeed;
+        }
+
+
+    }
     private void MoveCharacter()
     {
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
@@ -52,7 +73,7 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("isRunning", isMoving); // Set isRunning to true or false based on movement
 
         // Move the character
-        rb.MovePosition(rb.position + move.normalized * moveSpeed * Time.fixedDeltaTime); // Move using Rigidbody
+        rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime); // Move using Rigidbody
     }
 
     private void OnDisable()
