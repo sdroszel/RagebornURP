@@ -1,15 +1,19 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Speed of the character
-    private float adjustedMoveSpeed = 5f; // adjusted speed to slow down when attacking
-    public Transform playerCamera; // Reference to the player camera
+    [SerializeField] float moveSpeed = 5f; // Speed of the character
+    [SerializeField] Transform playerCamera; // Reference to the player camera
+    [SerializeField] float attackTime = 1f;
     private Vector2 moveInput; // Store movement input
     private PlayerControls playerControls;
     private Rigidbody rb; // Reference to the Rigidbody
     private Animator animator; // Reference to the Animator
+    private float adjustedMoveSpeed = 5f; // adjusted speed to slow down when attacking
+    private bool isAttacking = false;
 
     private void Awake() 
     {
@@ -25,33 +29,16 @@ public class PlayerController : MonoBehaviour
         // Bind move action to moveInput
         playerControls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         playerControls.Player.Move.canceled += ctx => moveInput = Vector2.zero;
+        playerControls.Player.Attack.performed += Attack;
+        
     }
+
 
     private void FixedUpdate() // Use FixedUpdate for physics calculations
     {
-        handleAttacking();
         MoveCharacter();
     }
 
-    private void handleAttacking()
-    {
-        animator.SetBool("Attacking", Input.GetMouseButton(0));
-        //animator.SetBool("Defending", Input.GetMouseButton(1));
-        if (Input.GetMouseButton(0))
-        {
-            adjustedMoveSpeed = moveSpeed * 0.6f;
-        }
-        //else if (Input.GetMouseButton(1))
-        //{
-        //    adjustedMoveSpeed = moveSpeed * 0.3f;
-        //}
-        else
-        {
-            adjustedMoveSpeed = moveSpeed;
-        }
-
-
-    }
     private void MoveCharacter()
     {
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
@@ -74,6 +61,21 @@ public class PlayerController : MonoBehaviour
 
         // Move the character
         rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime); // Move using Rigidbody
+    }
+
+     private void Attack(InputAction.CallbackContext context)
+    {
+        StartCoroutine(PerformAttack());
+    }
+
+    private IEnumerator PerformAttack() {
+        animator.SetBool("isAttacking", true);
+        isAttacking = true;
+
+        yield return new WaitForSeconds(attackTime);
+
+        isAttacking = false;
+        animator.SetBool("isAttacking", false);
     }
 
     private void OnDisable()
