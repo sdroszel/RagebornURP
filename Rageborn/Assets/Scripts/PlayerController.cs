@@ -5,28 +5,25 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] float moveSpeed = 5f; // Speed of the character
-    [SerializeField] Transform playerCamera; // Reference to the player camera
+    [SerializeField] float moveSpeed = 5f;
+    [SerializeField] Transform playerCamera;
     [SerializeField] float attackTime = 1f;
-    private Vector2 moveInput; // Store movement input
+    private Vector2 moveInput;
     private PlayerControls playerControls;
-    private Rigidbody rb; // Reference to the Rigidbody
-    private Animator animator; // Reference to the Animator
-    private float adjustedMoveSpeed = 5f; // adjusted speed to slow down when attacking
+    private Rigidbody rb;
+    private Animator animator;
+    private float adjustedMoveSpeed = 5f;
     private bool isAttacking = false;
 
-    private void Awake() 
-    {
+    private void Awake() {
         playerControls = new PlayerControls();
-        rb = GetComponent<Rigidbody>(); // Get the Rigidbody component
-        animator = GetComponent<Animator>(); // Get the Animator component
+        rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
     }
 
-    private void OnEnable()
-    {
+    private void OnEnable() {
         playerControls.Player.Enable();
 
-        // Bind move action to moveInput
         playerControls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         playerControls.Player.Move.canceled += ctx => moveInput = Vector2.zero;
         playerControls.Player.Attack.performed += Attack;
@@ -34,38 +31,32 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void FixedUpdate() // Use FixedUpdate for physics calculations
-    {
+    private void FixedUpdate() {
         MoveCharacter();
     }
 
-    private void MoveCharacter()
-    {
+    private void MoveCharacter() {
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
-        move = playerCamera.TransformDirection(move); // Convert to camera-relative movement
-        move.y = 0; // Prevent upward movement
+        move = playerCamera.TransformDirection(move);
+        move.y = 0;
 
-        // Check if the character is moving
         bool isMoving = move != Vector3.zero;
 
-        // Rotate the character to face the direction of movement
-        if (isMoving) 
-        {
-            // Rotate the character to face the direction of movement
+        if (isMoving) {
             Quaternion targetRotation = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f); // Smooth rotation
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
 
-        // Set running animation based on movement
-        animator.SetBool("isRunning", isMoving); // Set isRunning to true or false based on movement
+        animator.SetBool("isRunning", isMoving);
 
         // Move the character
-        rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime); // Move using Rigidbody
+        rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime);
     }
 
-     private void Attack(InputAction.CallbackContext context)
-    {
-        StartCoroutine(PerformAttack());
+    private void Attack(InputAction.CallbackContext context) {
+        if (context.performed && !isAttacking) {
+            StartCoroutine(PerformAttack());
+        }
     }
 
     private IEnumerator PerformAttack() {
@@ -78,8 +69,7 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("isAttacking", false);
     }
 
-    private void OnDisable()
-    {
+    private void OnDisable() {
         playerControls.Player.Disable();
     }
 }
