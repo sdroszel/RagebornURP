@@ -49,18 +49,4 @@ public class EnemyController : MonoBehaviour
         currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
         isWaiting = false;
     }
-
-    private void OnDrawGizmos() {
-        Gizmos.color = Color.red;
-
-        for (int i = 0; i < waypoints.Length; i++) {
-            if (i + 1 < waypoints.Length) {
-                Gizmos.DrawLine(waypoints[i].position, waypoints[i + 1].position);
-            }
-        }
-
-        if (waypoints.Length > 1) {
-            Gizmos.DrawLine(waypoints[waypoints.Length - 1].position, waypoints[0].position);
-        }
-    }
 }
