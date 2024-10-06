@@ -8,10 +8,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] Transform playerCamera;
     [SerializeField] float attackTime = 1f;
+    [SerializeField] AudioClip runningSnow;
     private Vector2 moveInput;
     private PlayerControls playerControls;
     private Rigidbody rb;
     private Animator animator;
+    private AudioSource audioSource;
     private float adjustedMoveSpeed = 5f;
     private bool isAttacking = false;
 
@@ -19,6 +21,7 @@ public class PlayerController : MonoBehaviour
         playerControls = new PlayerControls();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable() {
@@ -45,11 +48,21 @@ public class PlayerController : MonoBehaviour
         if (isMoving) {
             Quaternion targetRotation = Quaternion.LookRotation(move);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+
+            if (!audioSource.isPlaying) {
+                audioSource.clip = runningSnow;
+                audioSource.loop = true;
+                audioSource.Play();
+            }
+        } else {
+            
+            if (audioSource.isPlaying) {
+                audioSource.Stop();
+            }
         }
 
         animator.SetBool("isRunning", isMoving);
 
-        // Move the character
         rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime);
     }
 
