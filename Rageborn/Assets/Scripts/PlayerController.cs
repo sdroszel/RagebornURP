@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform playerCamera;
     [SerializeField] float attackTime = 1f;
     [SerializeField] AudioClip runningSnow;
+    [SerializeField] AudioClip runningFloor;
     private Vector2 moveInput;
     private PlayerControls playerControls;
     private Rigidbody rb;
@@ -16,6 +18,7 @@ public class PlayerController : MonoBehaviour
     private AudioSource audioSource;
     private float adjustedMoveSpeed = 5f;
     private bool isAttacking = false;
+    private bool isDungeonFloor = false;
 
     private void Awake() {
         playerControls = new PlayerControls();
@@ -50,7 +53,12 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
 
             if (!audioSource.isPlaying) {
-                audioSource.clip = runningSnow;
+                if (!isDungeonFloor) {
+                    audioSource.clip = runningSnow;
+                }
+                else {
+                    audioSource.clip = runningFloor;
+                }
                 audioSource.loop = true;
                 audioSource.Play();
             }
@@ -84,5 +92,19 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable() {
         playerControls.Player.Disable();
+    }
+
+    private void OnTriggerEnter(Collider collider) {
+        if (collider.CompareTag("Floor")) {
+            isDungeonFloor = true;
+            audioSource.Stop();
+        }
+    }
+
+    private void OnTriggerExit(Collider collider) {
+        if (collider.CompareTag("Floor")) {
+            isDungeonFloor = false;
+            audioSource.Stop();
+        }
     }
 }
