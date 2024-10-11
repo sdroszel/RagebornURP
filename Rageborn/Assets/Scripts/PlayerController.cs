@@ -1,62 +1,110 @@
+using System;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Speed of the character
-    public Transform playerCamera; // Reference to the player camera
-    private Vector2 moveInput; // Store movement input
+    [SerializeField] float moveSpeed = 5f;
+    [SerializeField] Transform playerCamera;
+    [SerializeField] float attackTime = 1f;
+    [SerializeField] AudioClip runningSnow;
+    [SerializeField] AudioClip runningFloor;
+    private Vector2 moveInput;
     private PlayerControls playerControls;
-    private Rigidbody rb; // Reference to the Rigidbody
-    private Animator animator; // Reference to the Animator
+    private Rigidbody rb;
+    private Animator animator;
+    private AudioSource audioSource;
+    private float adjustedMoveSpeed = 5f;
+    private bool isAttacking = false;
+    private bool isDungeonFloor = false;
 
-    private void Awake() 
-    {
+    private void Awake() {
         playerControls = new PlayerControls();
-        rb = GetComponent<Rigidbody>(); // Get the Rigidbody component
-        animator = GetComponent<Animator>(); // Get the Animator component
+        rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
-    private void OnEnable()
-    {
+    private void OnEnable() {
         playerControls.Player.Enable();
 
-        // Bind move action to moveInput
         playerControls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         playerControls.Player.Move.canceled += ctx => moveInput = Vector2.zero;
+        playerControls.Player.Attack.performed += Attack;
+        
     }
 
-    private void FixedUpdate() // Use FixedUpdate for physics calculations
-    {
+
+    private void FixedUpdate() {
         MoveCharacter();
     }
 
-    private void MoveCharacter()
-    {
+    private void MoveCharacter() {
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
-        move = playerCamera.TransformDirection(move); // Convert to camera-relative movement
-        move.y = 0; // Prevent upward movement
+        move = playerCamera.TransformDirection(move);
+        move.y = 0;
 
-        // Check if the character is moving
         bool isMoving = move != Vector3.zero;
 
-        // Rotate the character to face the direction of movement
-        if (isMoving) 
-        {
-            // Rotate the character to face the direction of movement
+        if (isMoving) {
             Quaternion targetRotation = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f); // Smooth rotation
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+
+            if (!audioSource.isPlaying) {
+                if (!isDungeonFloor) {
+                    audioSource.clip = runningSnow;
+                }
+                else {
+                    audioSource.clip = runningFloor;
+                }
+                audioSource.loop = true;
+                audioSource.Play();
+            }
+        } else {
+            
+            if (audioSource.isPlaying) {
+                audioSource.Stop();
+            }
         }
 
-        // Set running animation based on movement
-        animator.SetBool("isRunning", isMoving); // Set isRunning to true or false based on movement
+        animator.SetBool("isRunning", isMoving);
 
-        // Move the character
-        rb.MovePosition(rb.position + move.normalized * moveSpeed * Time.fixedDeltaTime); // Move using Rigidbody
+        rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime);
     }
 
-    private void OnDisable()
-    {
+    private void Attack(InputAction.CallbackContext context) {
+        if (context.performed && !isAttacking) {
+            StartCoroutine(PerformAttack());
+        }
+    }
+
+    private IEnumerator PerformAttack() {
+        animator.SetBool("isAttacking", true);
+        isAttacking = true;
+
+        yield return new WaitForSeconds(attackTime);
+
+        isAttacking = false;
+        animator.SetBool("isAttacking", false);
+    }
+
+    private void OnDisable() {
         playerControls.Player.Disable();
+    }
+
+    private void OnTriggerEnter(Collider collider) {
+        if (collider.CompareTag("Floor")) {
+            isDungeonFloor = true;
+            audioSource.Stop();
+        }
+    }
+
+    private void OnTriggerExit(Collider collider) {
+        if (collider.CompareTag("Floor")) {
+            isDungeonFloor = false;
+            audioSource.Stop();
+        }
     }
 }
