@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
@@ -71,7 +72,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void MoveCharacter() {
-        if (isAttacking) {
+        if (isAttacking || !isGrounded) {
             return;
         }
         
@@ -119,13 +120,33 @@ public class PlayerController : MonoBehaviour
     }
 
     private IEnumerator PerformAttack() {
-        animator.SetBool("isAttacking", true);
+        int randNum = Random.Range(0, 3);
+
+        if (randNum == 0) {
+            animator.SetBool("isAttacking1", true);
+        }
+        else if (randNum == 1) {
+            animator.SetBool("isAttacking2", true);
+        }
+        else {
+            animator.SetBool("isAttacking3", true);
+        }
+        
         isAttacking = true;
 
         yield return new WaitForSeconds(attackTime);
 
         isAttacking = false;
-        animator.SetBool("isAttacking", false);
+        
+        if (randNum == 0) {
+            animator.SetBool("isAttacking1", false);
+        }
+        else if (randNum == 1) {
+            animator.SetBool("isAttacking2", false);
+        }
+        else {
+            animator.SetBool("isAttacking3", false);
+        }
     }
 
     private void StartSprinting() {
@@ -139,7 +160,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Jump() {
-        if (isGrounded && canJump) {
+        if (isGrounded && canJump && !isAttacking) {
             animator.SetBool("isJumping", true);
 
             // Apply force for the jump

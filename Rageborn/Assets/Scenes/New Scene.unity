@@ -523,7 +523,7 @@ PrefabInstance:
     - target: {fileID: 3586073795136415854, guid: fad4dbd1c5edd27438948eaecb691d78,
         type: 3}
       propertyPath: attackTime
-      value: 0.5
+      value: 0.54
       objectReference: {fileID: 0}
     - target: {fileID: 3586073795136415854, guid: fad4dbd1c5edd27438948eaecb691d78,
         type: 3}
@@ -544,6 +544,11 @@ PrefabInstance:
         type: 3}
       propertyPath: groundLayer.m_Bits
       value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 4716503963827971857, guid: fad4dbd1c5edd27438948eaecb691d78,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 112
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
