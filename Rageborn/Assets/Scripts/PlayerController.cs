@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float attackTime = 1f;
     [SerializeField] float jumpForce = 7f;
     [SerializeField] float jumpTime = 1f;
+    [SerializeField] float rollTime = 1f;
     [SerializeField] AudioClip runningSnow;
     [SerializeField] AudioClip runningFloor;
     [SerializeField] LayerMask groundLayer;
@@ -51,6 +52,7 @@ public class PlayerController : MonoBehaviour
         playerControls.Player.Sprint.canceled += ctx => StopSprinting();
 
         playerControls.Player.Jump.performed += ctx => Jump();
+        //playerControls.Player.Roll.performed += ctx => Roll();
     }
 
     private void Update() {
@@ -173,6 +175,23 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(JumpCooldown());
         }
     }
+
+/*     private void Roll() {
+        if (isGrounded && !isAttacking) {
+            animator.speed = 2f;
+            animator.SetBool("isRolling", true);
+
+            StartCoroutine(RollCooldown());
+        }
+    }
+
+    private IEnumerator RollCooldown()
+    {
+        yield return new WaitForSeconds(rollTime);
+
+        animator.SetBool("isRolling", false);
+        animator.speed = 1f;
+    } */
 
     private IEnumerator JumpCooldown() {
         yield return new WaitForSeconds(jumpCooldown); // Wait for the cooldown duration
