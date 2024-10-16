@@ -1,5 +1,6 @@
 using UnityEngine;
-using TMPro;  // If you're using TextMeshPro
+using TMPro;
+using UnityEngine.UI;  // If you're using TextMeshPro
 
 public class ScrollingText : MonoBehaviour
 {
@@ -16,5 +17,6 @@ public class ScrollingText : MonoBehaviour
     void Update()
     {
         // Move the text upward over time
-        transform.position += new Vector3(0, scrollSpeed * Time.deltaTime, scrollSpeedZ * Time.deltaTime);    }
+        transform.position += new Vector3(0, scrollSpeed * Time.deltaTime, scrollSpeedZ * Time.deltaTime);
+    }
 }

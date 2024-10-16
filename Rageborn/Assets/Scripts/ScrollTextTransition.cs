@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ScrollTextTransition : MonoBehaviour
 {
@@ -13,6 +14,12 @@ public class ScrollTextTransition : MonoBehaviour
     private IEnumerator WaitForScrollEnd()
     {
         yield return new WaitForSeconds(scrollTime);
+
+        SceneManagerScript.instance.LoadNextScene();
+    }
+
+    public void SkipToNextScene() {
+        StopCoroutine(WaitForScrollEnd());
 
         SceneManagerScript.instance.LoadNextScene();
     }

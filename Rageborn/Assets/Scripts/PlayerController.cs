@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
         playerControls.Player.Sprint.canceled += ctx => StopSprinting();
 
         playerControls.Player.Jump.performed += ctx => Jump();
-        //playerControls.Player.Roll.performed += ctx => Roll();
+        playerControls.Player.Roll.performed += ctx => Roll();
     }
 
     private void Update() {
@@ -176,7 +176,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-/*     private void Roll() {
+    private void Roll() {
         if (isGrounded && !isAttacking) {
             animator.speed = 2f;
             animator.SetBool("isRolling", true);
@@ -191,7 +191,7 @@ public class PlayerController : MonoBehaviour
 
         animator.SetBool("isRolling", false);
         animator.speed = 1f;
-    } */
+    }
 
     private IEnumerator JumpCooldown() {
         yield return new WaitForSeconds(jumpCooldown); // Wait for the cooldown duration
