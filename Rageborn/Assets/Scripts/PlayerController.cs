@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.Interactions;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
@@ -15,6 +18,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpForce = 7f;
     [SerializeField] float jumpTime = 1f;
     [SerializeField] float rollTime = 1f;
+    [SerializeField] private GameObject fireballPrefab; // Reference to the fireball prefab
+    [SerializeField] private Transform fireballSpawnPoint; // Where the fireball is spawned
+    [SerializeField] private Vector3 fireballSpawnOffset;
+    [SerializeField] private float fireballLifetime;
+    [SerializeField] private float precastTime;
+    [SerializeField] private float fireballSpeed = 10f;
     [SerializeField] AudioClip runningSnow;
     [SerializeField] AudioClip runningFloor;
     [SerializeField] LayerMask groundLayer;
@@ -32,6 +41,9 @@ public class PlayerController : MonoBehaviour
     private bool isSprinting = false;
     private bool isDungeonFloor = false;
     private bool isGrounded = true;
+
+    private string[] attacks = {"isAttacking1", "isAttacking2", "isAttacking3"};
+    private int attackIndex = 0;
 
     private void Awake() {
         playerControls = new PlayerControls();
@@ -53,6 +65,8 @@ public class PlayerController : MonoBehaviour
 
         playerControls.Player.Jump.performed += ctx => Jump();
         playerControls.Player.Roll.performed += ctx => Roll();
+
+         playerControls.Player.CastFireball.performed += ctx => CastFireball();
     }
 
     private void Update() {
@@ -122,17 +136,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private IEnumerator PerformAttack() {
-        int randNum = Random.Range(0, 3);
-
-        if (randNum == 0) {
-            animator.SetBool("isAttacking1", true);
-        }
-        else if (randNum == 1) {
-            animator.SetBool("isAttacking2", true);
-        }
-        else {
-            animator.SetBool("isAttacking3", true);
-        }
+        animator.SetBool(attacks[attackIndex], true);
         
         isAttacking = true;
 
@@ -140,15 +144,36 @@ public class PlayerController : MonoBehaviour
 
         isAttacking = false;
         
-        if (randNum == 0) {
-            animator.SetBool("isAttacking1", false);
-        }
-        else if (randNum == 1) {
-            animator.SetBool("isAttacking2", false);
+        animator.SetBool(attacks[attackIndex], false);
+
+        if (attackIndex == attacks.Length - 1) {
+            attackIndex = 0;
         }
         else {
-            animator.SetBool("isAttacking3", false);
+            attackIndex++;
         }
+    }
+
+    private void CastFireball() {
+
+        StartCoroutine(Fireball());
+    }
+
+    private IEnumerator Fireball()
+    {
+    // Instantiate the fireball at the spawn point and get its Rigidbody
+        GameObject fireball = Instantiate(fireballPrefab, fireballSpawnPoint.position + fireballSpawnOffset, fireballSpawnPoint.rotation);
+        Rigidbody fireballRb = fireball.GetComponent<Rigidbody>();
+
+        yield return new WaitForSeconds(precastTime);
+        // Apply velocity to the fireball to shoot it forward
+        fireballRb.velocity = fireballSpawnPoint.forward * fireballSpeed;
+
+        Debug.Log("Fireball casted!");
+
+        yield return new WaitForSeconds(fireballLifetime);
+
+        Destroy(fireball);
     }
 
     private void StartSprinting() {
@@ -177,11 +202,14 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Roll() {
-        if (isGrounded && !isAttacking) {
+        if (isGrounded && !isAttacking && canJump) {
             animator.speed = 2f;
             animator.SetBool("isRolling", true);
 
+            canJump = false;
+
             StartCoroutine(RollCooldown());
+            StartCoroutine(JumpCooldown());
         }
     }
 
