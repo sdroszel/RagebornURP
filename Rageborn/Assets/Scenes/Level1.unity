@@ -3883,7 +3883,17 @@ PrefabInstance:
         type: 3}
       propertyPath: target
       value: 
-      objectReference: {fileID: 1503785469}
+      objectReference: {fileID: 1503785485}
+    - target: {fileID: 2179026275634302320, guid: 68d6c7d923dc35d45a2434e26af3a97a,
+        type: 3}
+      propertyPath: minYAngle
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2179026275634302320, guid: 68d6c7d923dc35d45a2434e26af3a97a,
+        type: 3}
+      propertyPath: obstacleMask.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 6305398638185804991, guid: 68d6c7d923dc35d45a2434e26af3a97a,
         type: 3}
       propertyPath: m_Name
@@ -6605,12 +6615,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d780173c250d334f80c9061373c8e4f, type: 3}
---- !u!4 &1503785469 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 716774543978533753, guid: fad4dbd1c5edd27438948eaecb691d78,
-    type: 3}
-  m_PrefabInstance: {fileID: 1064089389}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1503785474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6645,12 +6649,24 @@ MonoBehaviour:
   jumpForce: 7
   jumpTime: 1
   rollTime: 0.6
+  fireballPrefab: {fileID: 0}
+  fireballSpawnPoint: {fileID: 0}
+  fireballSpawnOffset: {x: 0, y: 0, z: 0}
+  fireballLifetime: 0
+  precastTime: 0
+  fireballSpeed: 10
   runningSnow: {fileID: 0}
   runningFloor: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
   jumpCooldown: 1
+--- !u!4 &1503785485 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 716774543978533753, guid: fad4dbd1c5edd27438948eaecb691d78,
+    type: 3}
+  m_PrefabInstance: {fileID: 1064089389}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1510072925 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7713241910125486505, guid: 33beb0341e1097043b65c47cfab61295,

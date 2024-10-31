@@ -138,7 +138,7 @@ PrefabInstance:
     - target: {fileID: 6124723897022698363, guid: 0fb846baa50bbab40878791b6c4ade9a,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6896334032973466049, guid: 0fb846baa50bbab40878791b6c4ade9a,
         type: 3}
@@ -583,7 +583,7 @@ PrefabInstance:
     - target: {fileID: 2179026275634302320, guid: 68d6c7d923dc35d45a2434e26af3a97a,
         type: 3}
       propertyPath: minYAngle
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2179026275634302320, guid: 68d6c7d923dc35d45a2434e26af3a97a,
         type: 3}
@@ -594,6 +594,11 @@ PrefabInstance:
         type: 3}
       propertyPath: obstacleMask.m_Bits
       value: 136
+      objectReference: {fileID: 0}
+    - target: {fileID: 5408988708308090179, guid: 68d6c7d923dc35d45a2434e26af3a97a,
+        type: 3}
+      propertyPath: near clip plane
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 6305398638185804991, guid: 68d6c7d923dc35d45a2434e26af3a97a,
         type: 3}
@@ -908,8 +913,8 @@ SceneRoots:
   - {fileID: 1314586484}
   - {fileID: 1770886075}
   - {fileID: 378871723441753739}
-  - {fileID: 1897354681}
   - {fileID: 301120706}
   - {fileID: 588362218766950795}
   - {fileID: 465439695}
   - {fileID: 7144665222861719172}
+  - {fileID: 1897354681}

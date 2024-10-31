@@ -11,6 +11,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] LayerMask obstacleMask;
     [SerializeField] float startYAngle = 20f;
     [SerializeField] float cameraRadius = 0.5f;
+    [SerializeField] float minDistance = 1f; // Minimum distance to prevent getting too close
+    [SerializeField] float groundOffset = 0.5f; // Distance above terrain to prevent clipping
 
     private float currentX = 0f;
     private float currentY;
@@ -37,7 +39,7 @@ public class CameraController : MonoBehaviour
         if (target != null) {
             Vector3 targetPosition = target.position;
 
-            
+            // Update camera rotation based on look input
             currentX += lookInput.x * sensitivity;
             currentY -= lookInput.y * sensitivity;
             currentY = Mathf.Clamp(currentY, minYAngle, maxYAngle);
@@ -45,17 +47,30 @@ public class CameraController : MonoBehaviour
             Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
             Vector3 desiredPosition = targetPosition - (rotation * Vector3.forward * distance);
 
+            // SphereCast to check for obstacles between target and desired camera position
             RaycastHit hit;
             Vector3 direction = (desiredPosition - targetPosition).normalized;
             float rayDistance = (desiredPosition - targetPosition).magnitude;
 
-            if (Physics.SphereCast(targetPosition,cameraRadius,  direction, out hit, rayDistance, obstacleMask)) {
-                transform.position = hit.point + hit.normal * cameraRadius;
-            }
-            else {
-                transform.position = desiredPosition;
+            if (Physics.SphereCast(targetPosition, cameraRadius, direction, out hit, rayDistance, obstacleMask)) {
+                // Adjust the camera distance if there is an obstacle
+                float adjustedDistance = Mathf.Clamp(hit.distance, minDistance, distance);
+                desiredPosition = targetPosition - (rotation * Vector3.forward * adjustedDistance);
+
+                // Stop at minDistance if too close
+                if (adjustedDistance <= minDistance + 0.1f) {
+                    desiredPosition = targetPosition - (rotation * Vector3.forward * minDistance);
+                }
             }
 
+            // Downward raycast to keep camera above ground
+            if (Physics.Raycast(desiredPosition, Vector3.down, out hit, Mathf.Infinity, obstacleMask)) {
+                // Ensure the camera stays above the terrain height
+                desiredPosition.y = Mathf.Max(desiredPosition.y, hit.point.y + groundOffset);
+            }
+
+            // Set the camera position and rotation
+            transform.position = desiredPosition;
             transform.LookAt(targetPosition);
         }
     }
