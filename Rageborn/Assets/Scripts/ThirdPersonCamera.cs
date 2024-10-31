@@ -37,11 +37,10 @@ public class CameraController : MonoBehaviour
         if (target != null) {
             Vector3 targetPosition = target.position;
 
-            if (isLooking) {
-                currentX += lookInput.x * sensitivity;
-                currentY -= lookInput.y * sensitivity;
-                currentY = Mathf.Clamp(currentY, minYAngle, maxYAngle);
-            }
+            
+            currentX += lookInput.x * sensitivity;
+            currentY -= lookInput.y * sensitivity;
+            currentY = Mathf.Clamp(currentY, minYAngle, maxYAngle);
 
             Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
             Vector3 desiredPosition = targetPosition - (rotation * Vector3.forward * distance);
@@ -60,8 +59,6 @@ public class CameraController : MonoBehaviour
             transform.LookAt(targetPosition);
         }
     }
-
-
 
     private void OnDisable() {
         inputActions.Player.Disable();
