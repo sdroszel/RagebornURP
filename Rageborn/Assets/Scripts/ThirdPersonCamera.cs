@@ -9,15 +9,18 @@ public class CameraController : MonoBehaviour
     [SerializeField] float minYAngle = -40f;
     [SerializeField] float maxYAngle = 80f;
     [SerializeField] LayerMask obstacleMask;
+    [SerializeField] float startYAngle = 20f;
+    [SerializeField] float cameraRadius = 0.5f;
 
     private float currentX = 0f;
-    private float currentY = 0f;
+    private float currentY;
     private Vector2 lookInput;
     private PlayerControls inputActions;
     private bool isLooking = false;
 
     private void Awake() {
         inputActions = new PlayerControls();
+        currentY = startYAngle;
     }
     
     private void OnEnable() {
@@ -47,8 +50,8 @@ public class CameraController : MonoBehaviour
             Vector3 direction = (desiredPosition - targetPosition).normalized;
             float rayDistance = (desiredPosition - targetPosition).magnitude;
 
-            if (Physics.Raycast(targetPosition, direction, out hit, rayDistance, obstacleMask)) {
-                transform.position = hit.point + hit.normal * 0.5f;
+            if (Physics.SphereCast(targetPosition,cameraRadius,  direction, out hit, rayDistance, obstacleMask)) {
+                transform.position = hit.point + hit.normal * cameraRadius;
             }
             else {
                 transform.position = desiredPosition;
