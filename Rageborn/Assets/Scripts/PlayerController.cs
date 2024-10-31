@@ -187,7 +187,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Jump() {
-        if (isGrounded && canJump && !isAttacking) {
+        /*if (isGrounded && canJump && !isAttacking) {
             animator.SetBool("isJumping", true);
 
             // Apply force for the jump
@@ -198,7 +198,7 @@ public class PlayerController : MonoBehaviour
 
             // Start the cooldown coroutine
             StartCoroutine(JumpCooldown());
-        }
+        } */
     }
 
     private void Roll() {
