@@ -5,6 +5,7 @@ public class EnemyController : MonoBehaviour
 {
     [SerializeField] private Transform[] waypoints;
     [SerializeField] private float moveSpeed = 2f;
+    [SerializeField] private float chaseSpeed = 3.5f;
     [SerializeField] private float waitTime = 1f;
     [SerializeField] private Transform player;
     [SerializeField] private float detectionRange = 10f;      // Sphere radius
@@ -13,8 +14,7 @@ public class EnemyController : MonoBehaviour
 
     private int currentWaypointIndex = 0;
     private bool isWaiting = false;
-    private bool playerInProximity = false;
-    private bool playerInSight = false;
+    private bool isChasing = false;
     private Animator animator;
 
     private void Awake() {
@@ -23,8 +23,12 @@ public class EnemyController : MonoBehaviour
 
     private void Update() {
         DetectPlayer();
-        if (!isWaiting && !playerInSight && !playerInProximity)
-        {
+
+        if (isChasing) {
+            ChasePlayer();
+        } else if (!isWaiting) {
+            animator.SetBool("isRunning", false); // Ensure running animation stops when not chasing
+            animator.SetBool("isWalking", true);  // Resume walking animation
             MoveToWaypoint();
         }
     }
@@ -71,29 +75,46 @@ public class EnemyController : MonoBehaviour
 
         // Check proximity detection (sphere)
         float distanceToPlayer = Vector3.Distance(enemyPosition, playerPosition);
-        if (distanceToPlayer <= detectionRange) {
-            playerInProximity = true;
-            Debug.Log("Player detected within proximity sphere.");
-        } else {
-            playerInProximity = false;
-        }
+        bool playerInProximity = distanceToPlayer <= detectionRange;
 
         // Check front cone detection (field of view)
+        bool playerInSight = false;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
         if (distanceToPlayer <= fovRange && angleToPlayer <= lineOfSightAngle / 2) {
             RaycastHit hit;
             if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange)) {
                 if (hit.transform == player) {
                     playerInSight = true;
-                    Debug.Log("Player detected within front cone.");
-                    animator.SetBool("isWalking", false); // Stop moving when player detected in front cone
-                    return;
-                } else {
-                    Debug.Log("Obstacle between enemy and player: " + hit.transform.name);
                 }
             }
-        } else {
-            playerInSight = false;
+        }
+
+        // Chase if the player is within proximity or in the field of view
+        isChasing = playerInProximity || playerInSight;
+    }
+
+    private void ChasePlayer() {
+        animator.SetBool("isRunning", true);
+        animator.SetBool("isWalking", false);
+
+        Vector3 direction = (player.position - transform.position).normalized;
+        direction.y = 0;
+
+        // Move towards the player
+        transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
+
+        // Rotate to face the player
+        if (direction != Vector3.zero) {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+        }
+
+        // Stop chasing if the player moves out of both proximity range and FOV
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        if (distanceToPlayer > detectionRange && !isChasing) {
+            isChasing = false;
+            animator.SetBool("isRunning", false);
+            animator.SetBool("isWalking", true);
         }
     }
 
@@ -113,6 +134,5 @@ public class EnemyController : MonoBehaviour
 
         Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
         Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
-        //Gizmos.DrawWireSphere(transform.position, fovRange);
     }
 }
