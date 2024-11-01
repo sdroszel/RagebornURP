@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
     private bool isAttacking = false;
     private bool isSprinting = false;
     private bool isDungeonFloor = false;
-    private bool isGrounded = true;
+    public bool isGrounded = true;
 
     private string[] attacks = {"isAttacking1", "isAttacking2", "isAttacking3"};
     private int attackIndex = 0;
@@ -91,6 +91,8 @@ public class PlayerController : MonoBehaviour
         if (isAttacking || !isGrounded) {
             return;
         }
+
+        rb.AddForce(Vector3.down * 5f, ForceMode.Force);
         
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
         move = playerCamera.TransformDirection(move);
@@ -227,7 +229,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private void CheckGroundStatus() {
-        float raycastDistance = 1.1f; // Adjust based on player height
+        float raycastDistance = 0.6f; // Adjust based on player height
         Vector3 rayOrigin = transform.position + Vector3.up * 0.1f; // Start raycast slightly above player
 
         bool wasGrounded = isGrounded; // Store previous grounded state
