@@ -12,9 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/ScrollingStory.unity
     guid: 18d7292d935772649a12600a918ce5f6
   - enabled: 1
-    path: Assets/Scenes/Level1.unity
-    guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
-    path: Assets/Scenes/Dungeon.unity
-    guid: 2b256b1d5309fb6439bcb75733c5100d
+    path: Assets/Scenes/TestLevel.unity
+    guid: bed63a7a2d828884fb284c6f333167f8
   m_configObjects: {}

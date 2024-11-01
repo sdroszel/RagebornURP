@@ -1,5 +1,5 @@
-using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
@@ -30,87 +30,22 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    void Update()
+    // Method to toggle music on/off based on Toggle's state
+    public void ToggleMusic(bool isOn)
     {
-        if (musicSource.isPlaying && musicSource.time >= musicSource.clip.length - loopFade)
+        isPlaying = isOn;
+
+        if (isPlaying)
         {
-            StartCoroutine(HandleLoop());
-        }
-    }
-
-    private IEnumerator HandleLoop()
-    {
-        yield return StartCoroutine(FadeOut());
-
-        // Restart the music from the beginning
-        musicSource.time = 0;
-        musicSource.Play();
-
-        yield return StartCoroutine(FadeIn());
-    }
-
-    // Method to change the music track
-    public void ChangeMusic(AudioClip newClip)
-    {
-        StartCoroutine(FadeOutAndChangeMusic(newClip));
-    }
-
-    private IEnumerator FadeOutAndChangeMusic(AudioClip newClip)
-    {
-        // Fade out the current music
-        yield return StartCoroutine(FadeOut());
-
-        if (musicSource.isPlaying) {
-        
-            // Change the clip and play it
-            musicSource.clip = newClip;
-            musicSource.Play();
-
-            // Fade in the new music
-            yield return StartCoroutine(FadeIn());
-        }
-    }
-
-    private IEnumerator FadeOut()
-    {
-        float startVolume = musicSource.volume;
-
-        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
-        {
-            musicSource.volume = Mathf.Lerp(startVolume, 0, t / fadeDuration);
-            yield return null;
-        }
-
-        musicSource.volume = 0;
-    }
-
-    private IEnumerator FadeIn()
-    {
-        float startVolume = 0.2f;
-        musicSource.volume = startVolume;
-
-        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
-        {
-            musicSource.volume = Mathf.Lerp(startVolume, 0.5f, t / fadeDuration);
-            yield return null;
-        }
-
-        musicSource.volume = 0.5f;
-    }
-
-    public void ToggleMusic()
-    {
-        if (musicSource.isPlaying)
-        {
-            musicSource.Pause();
-            isPlaying = false;
+            if (!musicSource.isPlaying)
+            {
+                musicSource.Play();
+                musicSource.volume = 0.5f; // Ensure volume is set correctly
+            }
         }
         else
         {
-            musicSource.time = 0;
-            musicSource.UnPause();
-            isPlaying = true;
+            musicSource.Stop(); // Stop playback entirely
         }
     }
-
 }

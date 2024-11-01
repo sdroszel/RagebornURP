@@ -8,27 +8,43 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float chaseSpeed = 3.5f;
     [SerializeField] private float waitTime = 1f;
     [SerializeField] private Transform player;
-    [SerializeField] private float detectionRange = 10f;      // Sphere radius
-    [SerializeField] private float fovRange = 15f;            // Cone range
-    [SerializeField] private float lineOfSightAngle = 45f;    // FOV angle
+    [SerializeField] private float detectionRange = 10f;
+    [SerializeField] private float fovRange = 15f;
+    [SerializeField] private float lineOfSightAngle = 45f;
+    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private float attackCooldown = 2f;
+    [SerializeField] private int attackDamage = 10;
+    [SerializeField] private Collider weaponCollider;
 
     private int currentWaypointIndex = 0;
     private bool isWaiting = false;
     private bool isChasing = false;
+    private bool canAttack = true;
     private Animator animator;
 
     private void Awake() {
         animator = GetComponent<Animator>();
+        weaponCollider.enabled = false; // Disable the weapon collider initially
     }
 
     private void Update() {
         DetectPlayer();
 
         if (isChasing) {
-            ChasePlayer();
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+            if (distanceToPlayer <= attackRange && canAttack) {
+                // Stop moving and start attacking
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isWalking", false);
+                StartCoroutine(AttackPlayer());
+            } else if (distanceToPlayer > attackRange) {
+                // Continue chasing if the player is out of attack range
+                ChasePlayer();
+            }
         } else if (!isWaiting) {
-            animator.SetBool("isRunning", false); // Ensure running animation stops when not chasing
-            animator.SetBool("isWalking", true);  // Resume walking animation
+            animator.SetBool("isRunning", false);
+            animator.SetBool("isWalking", true);
             MoveToWaypoint();
         }
     }
@@ -68,16 +84,13 @@ public class EnemyController : MonoBehaviour
             return;
         }
 
-        // Calculate positions and directions
         Vector3 enemyPosition = transform.position + Vector3.up * 1f;
         Vector3 playerPosition = player.position + Vector3.up * 1f;
         Vector3 directionToPlayer = (playerPosition - enemyPosition).normalized;
 
-        // Check proximity detection (sphere)
         float distanceToPlayer = Vector3.Distance(enemyPosition, playerPosition);
         bool playerInProximity = distanceToPlayer <= detectionRange;
 
-        // Check front cone detection (field of view)
         bool playerInSight = false;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
         if (distanceToPlayer <= fovRange && angleToPlayer <= lineOfSightAngle / 2) {
@@ -89,52 +102,78 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        // Chase if the player is within proximity or in the field of view
         isChasing = playerInProximity || playerInSight;
     }
 
     private void ChasePlayer() {
+        // Activate running animation and move towards the player if not in attack range
         animator.SetBool("isRunning", true);
         animator.SetBool("isWalking", false);
 
         Vector3 direction = (player.position - transform.position).normalized;
         direction.y = 0;
 
-        // Move towards the player
         transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
 
-        // Rotate to face the player
         if (direction != Vector3.zero) {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
+    }
 
-        // Stop chasing if the player moves out of both proximity range and FOV
+    private IEnumerator AttackPlayer() {
+        canAttack = false;
+        animator.SetTrigger("Attack"); // Trigger the attack animation
+
+        yield return new WaitForSeconds(0.5f); // Adjust to match the hit timing in the animation
+
+        // Apply damage if the player is still within attack range
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer > detectionRange && !isChasing) {
-            isChasing = false;
-            animator.SetBool("isRunning", false);
-            animator.SetBool("isWalking", true);
+        if (distanceToPlayer <= attackRange) {
+            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+            if (playerHealth != null) {
+                playerHealth.TakeDamage(attackDamage);
+            }
+        }
+
+        // Cooldown before the next attack
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true;
+    }
+
+    public void EnableWeaponCollider() {
+        weaponCollider.enabled = true;
+    }
+
+    public void DisableWeaponCollider() {
+        weaponCollider.enabled = false;
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        if (other.CompareTag("Player") && weaponCollider.enabled) {
+            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+            if (playerHealth != null) {
+                playerHealth.TakeDamage(attackDamage);
+            }
         }
     }
 
     private void OnDrawGizmosSelected() {
         Vector3 gizmoPosition = transform.position + Vector3.up * 0.5f;
         
-        // Draw the proximity detection range as a solid sphere
-        Gizmos.color = new Color(0, 1, 0, 0.2f); // Green with transparency
+        Gizmos.color = new Color(0, 1, 0, 0.2f);
         Gizmos.DrawSphere(gizmoPosition, detectionRange);
 
-        // Draw a wireframe for the proximity detection range
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(gizmoPosition, detectionRange);
 
-        // Draw the field of view cone range
         Gizmos.color = Color.red;
         Vector3 leftBoundary = Quaternion.Euler(0, -lineOfSightAngle / 2, 0) * transform.forward * fovRange;
         Vector3 rightBoundary = Quaternion.Euler(0, lineOfSightAngle / 2, 0) * transform.forward * fovRange;
-
         Gizmos.DrawLine(gizmoPosition, gizmoPosition + leftBoundary);
         Gizmos.DrawLine(gizmoPosition, gizmoPosition + rightBoundary);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(gizmoPosition, attackRange);
     }
 }

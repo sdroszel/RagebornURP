@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public PlayerJumpAndRoll playerJumpAndRoll;
     [HideInInspector] public PlayerGroundCheck groundCheck;
     [HideInInspector] public PlayerStamina playerStamina;
+    [HideInInspector] public PlayerHealth playerHealth;
     [HideInInspector] public PlayerAudio playerAudio;
 
     private void Awake() {
@@ -17,6 +18,7 @@ public class PlayerController : MonoBehaviour
         playerJumpAndRoll = GetComponent<PlayerJumpAndRoll>();
         groundCheck = GetComponent<PlayerGroundCheck>();
         playerStamina = GetComponent<PlayerStamina>();
+        playerHealth = GetComponent<PlayerHealth>();
         playerAudio = GetComponent<PlayerAudio>();
 
         // Any other shared components can be initialized here

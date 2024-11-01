@@ -545,8 +545,8 @@ GameObject:
   - component: {fileID: 764293218}
   - component: {fileID: 764293219}
   m_Layer: 5
-  m_Name: Toggle
-  m_TagString: Untagged
+  m_Name: ToggleMusicButton
+  m_TagString: MusicToggle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -622,7 +622,7 @@ MonoBehaviour:
       - m_Target: {fileID: 1275101854}
         m_TargetAssemblyTypeName: AudioManager, Assembly-CSharp
         m_MethodName: ToggleMusic
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2075,7 +2075,7 @@ GameObject:
   - component: {fileID: 1703013813}
   - component: {fileID: 1703013812}
   m_Layer: 5
-  m_Name: Play
+  m_Name: PlayButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2209,7 +2209,7 @@ GameObject:
   - component: {fileID: 1818635898}
   - component: {fileID: 1818635897}
   m_Layer: 5
-  m_Name: QUIT
+  m_Name: QuitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

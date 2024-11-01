@@ -13,23 +13,39 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float sprintSpeed = 10f;
     [SerializeField] private Transform playerCamera;
     private bool isSprinting;
+    private PlayerControls playerControls;
 
     private void Awake()
     {
         playerController = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-
         adjustedMoveSpeed = walkSpeed;
+
+        playerControls = new PlayerControls();
     }
 
     private void OnEnable() {
-        var playerControls = new PlayerControls();
         playerControls.Player.Enable();
-        playerControls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        playerControls.Player.Move.canceled += ctx => moveInput = Vector2.zero;
-        playerControls.Player.Sprint.started += ctx => StartSprinting();
-        playerControls.Player.Sprint.canceled += ctx => StopSprinting();
+
+        // Use named methods for subscriptions to ensure proper matching in OnDisable
+        playerControls.Player.Move.performed += OnMovePerformed;
+        playerControls.Player.Move.canceled += OnMoveCanceled;
+        playerControls.Player.Sprint.started += OnSprintStarted;
+        playerControls.Player.Sprint.canceled += OnSprintCanceled;
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from input events using the same named methods to prevent lingering references
+        if (playerControls != null)
+        {
+            playerControls.Player.Move.performed -= OnMovePerformed;
+            playerControls.Player.Move.canceled -= OnMoveCanceled;
+            playerControls.Player.Sprint.started -= OnSprintStarted;
+            playerControls.Player.Sprint.canceled -= OnSprintCanceled;
+            playerControls.Disable(); // Disable all actions
+        }
     }
 
     private void FixedUpdate() {
@@ -49,20 +65,18 @@ public class PlayerMovement : MonoBehaviour
 
         bool isMoving = move != Vector3.zero;
 
-        // Sprint if the button is held, stamina is available, and the player is moving
         if (isSprinting && playerController.playerStamina.CanSprint() && isMoving) {
             adjustedMoveSpeed = sprintSpeed;
-            playerController.playerStamina.ConsumeSprint(); // Consume stamina when sprinting
+            playerController.playerStamina.ConsumeSprint();
         } else {
             adjustedMoveSpeed = walkSpeed;
-            playerController.playerStamina.ReplenishSprint(); // Replenish stamina when not sprinting
+            playerController.playerStamina.ReplenishSprint();
         }
 
         if (isMoving) {
             Quaternion targetRotation = Quaternion.LookRotation(move);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
 
-            // Manage footsteps audio
             if (!playerController.playerAudio.AudioSource.isPlaying) {
                 playerController.playerAudio.AudioSource.clip = playerController.playerAudio.GetCurrentRunningSound();
                 playerController.playerAudio.AudioSource.loop = true;
@@ -80,13 +94,25 @@ public class PlayerMovement : MonoBehaviour
         rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime);
     }
 
-    private void StartSprinting() {
+    private void OnMovePerformed(InputAction.CallbackContext ctx)
+    {
+        moveInput = ctx.ReadValue<Vector2>();
+    }
+
+    private void OnMoveCanceled(InputAction.CallbackContext ctx)
+    {
+        moveInput = Vector2.zero;
+    }
+
+    private void OnSprintStarted(InputAction.CallbackContext ctx)
+    {
         if (playerController.playerStamina.CanSprint()) {
             isSprinting = true;
         }
     }
 
-    private void StopSprinting() {
+    private void OnSprintCanceled(InputAction.CallbackContext ctx)
+    {
         isSprinting = false;
     }
 

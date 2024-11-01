@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI; // Import UI namespace
 
 public class SceneManagerScript : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class SceneManagerScript : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (instance != this)
         {
@@ -23,6 +25,33 @@ public class SceneManagerScript : MonoBehaviour
         if (fadeCanvasGroup != null)
         {
             DontDestroyOnLoad(fadeCanvasGroup.gameObject);
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.buildIndex == 0) // Assuming 0 is the main menu scene
+        {
+            AssignMainMenuButtonEvents();
+        }
+    }
+
+    private void AssignMainMenuButtonEvents()
+    {
+        // Find buttons in the main menu scene and assign their OnClick events
+        Button playButton = GameObject.Find("PlayButton")?.GetComponent<Button>();
+        Button quitButton = GameObject.Find("QuitButton")?.GetComponent<Button>();
+
+        if (playButton != null)
+        {
+            playButton.onClick.RemoveAllListeners(); // Clear any existing listeners
+            playButton.onClick.AddListener(LoadNextScene); // Add LoadNextScene as the event
+        }
+
+        if (quitButton != null)
+        {
+            quitButton.onClick.RemoveAllListeners();
+            quitButton.onClick.AddListener(QuitGame); // Add QuitGame as the event
         }
     }
 
@@ -37,11 +66,14 @@ public class SceneManagerScript : MonoBehaviour
         }
     }
 
+    public void LoadMainMenu() {
+        StartCoroutine(FadeAndLoadScene(0));
+    }
+
     private IEnumerator FadeAndLoadScene(int sceneIndex)
     {
         yield return StartCoroutine(FadeOut());
         SceneManager.LoadScene(sceneIndex);
-
         yield return StartCoroutine(FadeIn());
     }
 
@@ -81,5 +113,10 @@ public class SceneManagerScript : MonoBehaviour
         #else
             Application.Quit();
         #endif
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }
