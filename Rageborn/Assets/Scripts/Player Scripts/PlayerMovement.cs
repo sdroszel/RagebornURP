@@ -89,4 +89,9 @@ public class PlayerMovement : MonoBehaviour
     private void StopSprinting() {
         isSprinting = false;
     }
+
+    public float CurrentMoveSpeed {
+        get => adjustedMoveSpeed;
+        set => adjustedMoveSpeed = value;
+    }
 }

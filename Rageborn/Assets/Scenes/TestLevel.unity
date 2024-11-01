@@ -973,8 +973,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7292590693452834488, guid: 3a0692326ec9fa64e8f2095072991f1b,
         type: 3}
+      propertyPath: jumpTime
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7292590693452834488, guid: 3a0692326ec9fa64e8f2095072991f1b,
+        type: 3}
+      propertyPath: rollTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7292590693452834488, guid: 3a0692326ec9fa64e8f2095072991f1b,
+        type: 3}
       propertyPath: jumpForce
       value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7292590693452834488, guid: 3a0692326ec9fa64e8f2095072991f1b,
+        type: 3}
+      propertyPath: rollCooldown
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
