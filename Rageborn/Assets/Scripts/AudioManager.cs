@@ -4,6 +4,7 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
+    public bool isPlaying = true;
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private float loopFade = 0.5f;
@@ -59,12 +60,15 @@ public class AudioManager : MonoBehaviour
         // Fade out the current music
         yield return StartCoroutine(FadeOut());
 
-        // Change the clip and play it
-        musicSource.clip = newClip;
-        musicSource.Play();
+        if (musicSource.isPlaying) {
+        
+            // Change the clip and play it
+            musicSource.clip = newClip;
+            musicSource.Play();
 
-        // Fade in the new music
-        yield return StartCoroutine(FadeIn());
+            // Fade in the new music
+            yield return StartCoroutine(FadeIn());
+        }
     }
 
     private IEnumerator FadeOut()
@@ -94,5 +98,19 @@ public class AudioManager : MonoBehaviour
         musicSource.volume = 0.5f;
     }
 
+    public void ToggleMusic()
+    {
+        if (musicSource.isPlaying)
+        {
+            musicSource.Pause();
+            isPlaying = false;
+        }
+        else
+        {
+            musicSource.time = 0;
+            musicSource.UnPause();
+            isPlaying = true;
+        }
+    }
 
 }
