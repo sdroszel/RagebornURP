@@ -53,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void MoveCharacter() {
-        if (playerController.playerCombat.GetAttackStatus() || !playerController.groundCheck.IsGrounded()) {
+        if (!playerController.groundCheck.IsGrounded()) {
             return;
         }
 
@@ -65,7 +65,9 @@ public class PlayerMovement : MonoBehaviour
 
         bool isMoving = move != Vector3.zero;
 
-        if (isSprinting && playerController.playerStamina.CanSprint() && isMoving) {
+        if (playerController.playerCombat.GetAttackStatus()) {
+            adjustedMoveSpeed = walkSpeed * 0.5f;
+        } else if (isSprinting && playerController.playerStamina.CanSprint() && isMoving) {
             adjustedMoveSpeed = sprintSpeed;
             playerController.playerStamina.ConsumeSprint();
         } else {

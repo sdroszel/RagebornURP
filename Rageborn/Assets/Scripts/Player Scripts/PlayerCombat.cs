@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
+    [SerializeField] private float attackTime = 1f;
     private PlayerController playerController;
     private Animator animator;
     private bool isAttacking = false;
@@ -49,7 +50,7 @@ public class PlayerCombat : MonoBehaviour
         animator.SetBool(attacks[attackIndex], true);
         isAttacking = true;
 
-        yield return new WaitForSeconds(1f); // Adjust this for the timing of your attack
+        yield return new WaitForSeconds(attackTime); // Adjust this for the timing of your attack
 
         isAttacking = false;
         animator.SetBool(attacks[attackIndex], false);

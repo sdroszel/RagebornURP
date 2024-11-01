@@ -245,7 +245,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.172
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -629,9 +629,29 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3689114643996997934, guid: 05f860db1b9c8c24bab80bdc02f0cfeb,
         type: 3}
+      propertyPath: hitSound
+      value: 
+      objectReference: {fileID: 8300000, guid: b164c85fbdffe439397e2737d674352b, type: 3}
+    - target: {fileID: 3689114643996997934, guid: 05f860db1b9c8c24bab80bdc02f0cfeb,
+        type: 3}
+      propertyPath: chaseSpeed
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3689114643996997934, guid: 05f860db1b9c8c24bab80bdc02f0cfeb,
+        type: 3}
       propertyPath: attackRange
       value: 1.51
       objectReference: {fileID: 0}
+    - target: {fileID: 3689114643996997934, guid: 05f860db1b9c8c24bab80bdc02f0cfeb,
+        type: 3}
+      propertyPath: attackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 87829d59623854673bdd1606fdf5582f, type: 3}
+    - target: {fileID: 3689114643996997934, guid: 05f860db1b9c8c24bab80bdc02f0cfeb,
+        type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 1058188807}
     - target: {fileID: 3689114643996997934, guid: 05f860db1b9c8c24bab80bdc02f0cfeb,
         type: 3}
       propertyPath: attackCooldown
@@ -845,7 +865,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1847712055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -868,14 +888,14 @@ MonoBehaviour:
       m_Calls: []
   m_text: Game Over
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: d75b8f41e959450c84ac6e967084d3e1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4278190261
   m_fontColor: {r: 0.7106918, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -893,14 +913,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
-  m_fontSizeBase: 72
+  m_fontSize: 300
+  m_fontSizeBase: 300
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_fontStyle: 16
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -929,7 +949,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -177.06671, y: -37.488403, z: 0, w: 0}
+  m_margin: {x: -953.87756, y: -192.71112, z: -148.8772, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -959,7 +979,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 143, y: 0}
+  m_AnchoredPosition: {x: 373, y: -47}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1865980921
@@ -1161,8 +1181,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.09907532, y: 1.0535641, z: 0.06371357}
-  m_Center: {x: -0.034934998, y: -0.70403016, z: 0.014443513}
+  m_Size: {x: 0.57332724, y: 1.0535642, z: 1.0188593}
+  m_Center: {x: -0.06490018, y: -0.7040301, z: -0.053271625}
 --- !u!1 &1925976501
 GameObject:
   m_ObjectHideFlags: 0
@@ -1293,6 +1313,11 @@ PrefabInstance:
         type: 3}
       propertyPath: groundLayer.m_Bits
       value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 3664386488081700637, guid: 3a0692326ec9fa64e8f2095072991f1b,
+        type: 3}
+      propertyPath: attackTime
+      value: 0.54
       objectReference: {fileID: 0}
     - target: {fileID: 3706332920121765665, guid: 3a0692326ec9fa64e8f2095072991f1b,
         type: 3}

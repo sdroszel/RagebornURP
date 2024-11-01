@@ -15,6 +15,9 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float attackCooldown = 2f;
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private Collider weaponCollider;
+    [SerializeField] private AudioSource audioSource; // Reference to the AudioSource
+    [SerializeField] private AudioClip attackSound;
+    [SerializeField] private AudioClip hitSound;
 
     private int currentWaypointIndex = 0;
     private bool isWaiting = false;
@@ -24,6 +27,9 @@ public class EnemyController : MonoBehaviour
 
     private void Awake() {
         animator = GetComponent<Animator>();
+        if (audioSource == null) {
+            audioSource = GetComponent<AudioSource>(); // Attempt to find an AudioSource if none is assigned
+        }
         weaponCollider.enabled = false; // Disable the weapon collider initially
     }
 
@@ -125,15 +131,9 @@ public class EnemyController : MonoBehaviour
         canAttack = false;
         animator.SetTrigger("Attack"); // Trigger the attack animation
 
-        yield return new WaitForSeconds(0.5f); // Adjust to match the hit timing in the animation
-
-        // Apply damage if the player is still within attack range
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer <= attackRange) {
-            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-            if (playerHealth != null) {
-                playerHealth.TakeDamage(attackDamage);
-            }
+        // Play the attack sound effect
+        if (audioSource != null && attackSound != null) {
+            audioSource.PlayOneShot(attackSound);
         }
 
         // Cooldown before the next attack
@@ -154,6 +154,11 @@ public class EnemyController : MonoBehaviour
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
             if (playerHealth != null) {
                 playerHealth.TakeDamage(attackDamage);
+            }
+
+            // Play the attack sound effect
+            if (audioSource != null && hitSound != null) {
+                audioSource.PlayOneShot(hitSound);
             }
         }
     }
