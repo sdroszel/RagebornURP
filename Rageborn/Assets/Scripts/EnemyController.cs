@@ -119,20 +119,22 @@ public class EnemyController : MonoBehaviour
     }
 
     private void OnDrawGizmosSelected() {
+        Vector3 gizmoPosition = transform.position + Vector3.up * 0.5f;
+        
         // Draw the proximity detection range as a solid sphere
         Gizmos.color = new Color(0, 1, 0, 0.2f); // Green with transparency
-        Gizmos.DrawSphere(transform.position, detectionRange);
+        Gizmos.DrawSphere(gizmoPosition, detectionRange);
 
         // Draw a wireframe for the proximity detection range
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        Gizmos.DrawWireSphere(gizmoPosition, detectionRange);
 
         // Draw the field of view cone range
         Gizmos.color = Color.red;
         Vector3 leftBoundary = Quaternion.Euler(0, -lineOfSightAngle / 2, 0) * transform.forward * fovRange;
         Vector3 rightBoundary = Quaternion.Euler(0, lineOfSightAngle / 2, 0) * transform.forward * fovRange;
 
-        Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
-        Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
+        Gizmos.DrawLine(gizmoPosition, gizmoPosition + leftBoundary);
+        Gizmos.DrawLine(gizmoPosition, gizmoPosition + rightBoundary);
     }
 }
