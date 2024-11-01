@@ -56,15 +56,17 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private IEnumerator PerformJump()
     {
+        playerController.playerAudio.StopFootsteps(); // Stop footsteps audio at start of jump
         animator.SetBool("isJumping", true);
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         canJump = false;
 
-        yield return new WaitForSeconds(jumpTime);
+        yield return new WaitForSeconds(jumpTime); // Wait for jump animation to complete
 
         animator.SetBool("isJumping", false);
+        yield return StartCoroutine(JumpCooldown()); // Wait for cooldown before allowing next jump
 
-        StartCoroutine(JumpCooldown());
+        playerController.playerAudio.ResumeFootsteps(); // Resume footsteps only after action and cooldown are complete
     }
 
     private IEnumerator JumpCooldown()
@@ -83,25 +85,28 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private IEnumerator PerformRoll()
     {
+        playerController.playerAudio.StopFootsteps(); // Stop footsteps audio at start of roll
+
         animator.SetBool("isRolling", true);
         float originalSpeed = playerMovement.CurrentMoveSpeed;
         playerMovement.CurrentMoveSpeed = originalSpeed * rollSpeedMultiplier;
         animator.speed = 2f;
         canRoll = false;
 
-        yield return new WaitForSeconds(rollTime);
+        yield return new WaitForSeconds(rollTime); // Wait for roll animation to complete
 
         playerMovement.CurrentMoveSpeed = originalSpeed;
         animator.SetBool("isRolling", false);
         animator.speed = 1f;
-        canRoll = true;
 
-        StartCoroutine(RollCooldown());
-        StartCoroutine(JumpCooldown());
+        yield return StartCoroutine(RollCooldown()); // Wait for cooldown before allowing next roll
+
+        playerController.playerAudio.ResumeFootsteps(); // Resume footsteps only after action and cooldown are complete
     }
 
     private IEnumerator RollCooldown()
     {
         yield return new WaitForSeconds(rollTime);
+        canRoll = true;
     }
 }

@@ -1228,6 +1228,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 495692684757888191, guid: 3a0692326ec9fa64e8f2095072991f1b,
+        type: 3}
+      propertyPath: m_Volume
+      value: 0.293
+      objectReference: {fileID: 0}
     - target: {fileID: 1006264517487391964, guid: 3a0692326ec9fa64e8f2095072991f1b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1309,6 +1314,21 @@ PrefabInstance:
       propertyPath: fireballSpawnOffset.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2851571681022215676, guid: 3a0692326ec9fa64e8f2095072991f1b,
+        type: 3}
+      propertyPath: runningSnow
+      value: 
+      objectReference: {fileID: 8300000, guid: 4c784f2380314b24a822b2dd4fe062ab, type: 3}
+    - target: {fileID: 2851571681022215676, guid: 3a0692326ec9fa64e8f2095072991f1b,
+        type: 3}
+      propertyPath: runningFloor
+      value: 
+      objectReference: {fileID: 8300000, guid: 062aac8f0463d7945a5a16732efbea51, type: 3}
+    - target: {fileID: 2851571681022215676, guid: 3a0692326ec9fa64e8f2095072991f1b,
+        type: 3}
+      propertyPath: footstepDelay
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3001376566649984727, guid: 3a0692326ec9fa64e8f2095072991f1b,
         type: 3}
       propertyPath: groundLayer.m_Bits
@@ -1319,6 +1339,11 @@ PrefabInstance:
       propertyPath: attackTime
       value: 0.54
       objectReference: {fileID: 0}
+    - target: {fileID: 3664386488081700637, guid: 3a0692326ec9fa64e8f2095072991f1b,
+        type: 3}
+      propertyPath: attackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 38ed0792920d9470f8e6542230188882, type: 3}
     - target: {fileID: 3706332920121765665, guid: 3a0692326ec9fa64e8f2095072991f1b,
         type: 3}
       propertyPath: sprintBarFill

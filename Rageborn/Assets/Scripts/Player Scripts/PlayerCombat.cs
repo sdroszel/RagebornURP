@@ -5,17 +5,20 @@ using UnityEngine.InputSystem;
 public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private float attackTime = 1f;
+    [SerializeField] private AudioClip attackSound;
     private PlayerController playerController;
     private Animator animator;
     private bool isAttacking = false;
     private int attackIndex = 0;
     private readonly string[] attacks = { "isAttacking1", "isAttacking2", "isAttacking3" };
     private PlayerControls playerControls;
+    private AudioSource audioSource;
 
     private void Awake()
     {
         playerController = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
 
         // Initialize PlayerControls only once in Awake
         playerControls = new PlayerControls();
@@ -47,6 +50,13 @@ public class PlayerCombat : MonoBehaviour
 
     private IEnumerator PerformAttack()
     {
+        playerController.playerAudio.StopFootsteps();
+
+        if (attackSound != null)
+        {
+            audioSource.PlayOneShot(attackSound);
+        }
+        
         animator.SetBool(attacks[attackIndex], true);
         isAttacking = true;
 
@@ -56,6 +66,8 @@ public class PlayerCombat : MonoBehaviour
         animator.SetBool(attacks[attackIndex], false);
 
         attackIndex = (attackIndex + 1) % attacks.Length;
+
+        playerController.playerAudio.ResumeFootsteps();
     }
 
     public bool GetAttackStatus()
