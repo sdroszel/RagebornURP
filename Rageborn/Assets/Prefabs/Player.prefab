@@ -491,11 +491,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1693d2ca92a58dd4994081b7877ed6c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  walkSpeed: 5
+  sprintSpeed: 10
+  sprintBarFill: {fileID: 0}
+  maxSprintDuration: 5
   playerCamera: {fileID: 0}
-  attackTime: 1
+  attackTime: 0.53
+  jumpForce: 7
+  jumpTime: 1
+  rollTime: 0.6
   runningSnow: {fileID: 0}
   runningFloor: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  jumpCooldown: 1
 --- !u!54 &4716503963827971857
 Rigidbody:
   m_ObjectHideFlags: 0

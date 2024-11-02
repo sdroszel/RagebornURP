@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class OptionsMenuController : MonoBehaviour
 {
-[SerializeField] private GameObject menu;
+    [SerializeField] private GameObject menu;
 
-    public void OpenOptionsMenu() {
+    public void OpenOptionsMenu()
+    {
         menu.SetActive(true);
     }
 
-    public void CloseOptionsMenu() {
+    public void CloseOptionsMenu()
+    {
         menu.SetActive(false);
     }
 }
