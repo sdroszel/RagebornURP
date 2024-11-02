@@ -1222,8 +1222,14 @@ GameObject:
   m_Component:
   - component: {fileID: 1006264517487391964}
   - component: {fileID: 5470913732312848410}
-  - component: {fileID: 1287319548362006588}
   - component: {fileID: 2842627745090504355}
+  - component: {fileID: 2108158489636193253}
+  - component: {fileID: 7292590693452834488}
+  - component: {fileID: 3664386488081700637}
+  - component: {fileID: 3001376566649984727}
+  - component: {fileID: 3706332920121765665}
+  - component: {fileID: 2851571681022215676}
+  - component: {fileID: 1287319548362006588}
   - component: {fileID: 8376442656430742988}
   - component: {fileID: 495692684757888191}
   m_Layer: 0
@@ -1274,6 +1280,111 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2842627745090504355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4803201020044708448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1693d2ca92a58dd4994081b7877ed6c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerMovement: {fileID: 0}
+  playerCombat: {fileID: 0}
+  playerJumpAndRoll: {fileID: 0}
+  groundCheck: {fileID: 0}
+  playerStamina: {fileID: 0}
+  playerAudio: {fileID: 0}
+--- !u!114 &2108158489636193253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4803201020044708448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78cb399375243ba4aad697c84f2c36ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSpeed: 5
+  sprintSpeed: 10
+  playerCamera: {fileID: 0}
+--- !u!114 &7292590693452834488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4803201020044708448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b1b0c9c50b661749a4248230e98aac2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpForce: 7
+  jumpCooldown: 1
+--- !u!114 &3664386488081700637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4803201020044708448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 758d26aa775daaf4783855ee62fae769, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3001376566649984727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4803201020044708448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 241b35d1cd8607b44a57647c2934b490, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  OnLand:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &3706332920121765665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4803201020044708448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c59a2bbf29ab65141b449b588d2d1fb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSprintDuration: 5
+  sprintBarFill: {fileID: 0}
+--- !u!114 &2851571681022215676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4803201020044708448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f473346710d441043b829835548c246a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runningSnow: {fileID: 0}
+  runningFloor: {fileID: 0}
 --- !u!136 &1287319548362006588
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1297,33 +1408,6 @@ CapsuleCollider:
   m_Height: 1.6081948
   m_Direction: 1
   m_Center: {x: 0, y: 0.81, z: 0}
---- !u!114 &2842627745090504355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4803201020044708448}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1693d2ca92a58dd4994081b7877ed6c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkSpeed: 5
-  sprintSpeed: 10
-  sprintBarFill: {fileID: 0}
-  maxSprintDuration: 5
-  playerCamera: {fileID: 0}
-  attackTime: 0.54
-  jumpForce: 3.5
-  jumpTime: 0.8
-  rollTime: 0.6
-  runningSnow: {fileID: 0}
-  runningFloor: {fileID: 0}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  jumpCooldown: 1
 --- !u!54 &8376442656430742988
 Rigidbody:
   m_ObjectHideFlags: 0

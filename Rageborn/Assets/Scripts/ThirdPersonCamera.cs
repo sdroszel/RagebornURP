@@ -10,7 +10,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] float maxYAngle = 80f;
     [SerializeField] LayerMask obstacleMask;
     [SerializeField] float startYAngle = 20f;
-    [SerializeField] float cameraRadius = 0.5f;
+    [SerializeField] float groundOffset = 0.5f;
+    [SerializeField] float minDistance = 1f;
 
     private float currentX = 0f;
     private float currentY;
@@ -18,12 +19,14 @@ public class CameraController : MonoBehaviour
     private PlayerControls inputActions;
     private bool isLooking = false;
 
-    private void Awake() {
+    private void Awake()
+    {
         inputActions = new PlayerControls();
         currentY = startYAngle;
     }
-    
-    private void OnEnable() {
+
+    private void OnEnable()
+    {
         inputActions.Player.Enable();
 
         inputActions.Player.Look.performed += ctx => lookInput = ctx.ReadValue<Vector2>();
@@ -33,37 +36,41 @@ public class CameraController : MonoBehaviour
         inputActions.Player.MouseLook.canceled += ctx => isLooking = false;
     }
 
-    private void LateUpdate() {
-        if (target != null) {
+    private void LateUpdate()
+    {
+        if (target != null)
+        {
             Vector3 targetPosition = target.position;
 
-            if (isLooking) {
-                currentX += lookInput.x * sensitivity;
-                currentY -= lookInput.y * sensitivity;
-                currentY = Mathf.Clamp(currentY, minYAngle, maxYAngle);
-            }
+            currentX += lookInput.x * sensitivity;
+            currentY -= lookInput.y * sensitivity;
+            currentY = Mathf.Clamp(currentY, minYAngle, maxYAngle);
 
             Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
             Vector3 desiredPosition = targetPosition - (rotation * Vector3.forward * distance);
 
             RaycastHit hit;
             Vector3 direction = (desiredPosition - targetPosition).normalized;
-            float rayDistance = (desiredPosition - targetPosition).magnitude;
+            float rayDistance = Vector3.Distance(targetPosition, desiredPosition);
 
-            if (Physics.SphereCast(targetPosition,cameraRadius,  direction, out hit, rayDistance, obstacleMask)) {
-                transform.position = hit.point + hit.normal * cameraRadius;
-            }
-            else {
-                transform.position = desiredPosition;
+            if (Physics.Raycast(targetPosition, direction, out hit, rayDistance, obstacleMask))
+            {
+                float adjustedDistance = Mathf.Clamp(hit.distance, minDistance, distance);
+                desiredPosition = targetPosition - (rotation * Vector3.forward * adjustedDistance);
             }
 
+            if (Physics.Raycast(desiredPosition, Vector3.down, out hit, Mathf.Infinity, obstacleMask))
+            {
+                desiredPosition.y = Mathf.Max(desiredPosition.y, hit.point.y + groundOffset);
+            }
+
+            transform.position = desiredPosition;
             transform.LookAt(targetPosition);
         }
     }
 
-
-
-    private void OnDisable() {
+    private void OnDisable()
+    {
         inputActions.Player.Disable();
     }
 }

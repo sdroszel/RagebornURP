@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SceneManagerScript : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class SceneManagerScript : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (instance != this)
         {
@@ -23,6 +25,32 @@ public class SceneManagerScript : MonoBehaviour
         if (fadeCanvasGroup != null)
         {
             DontDestroyOnLoad(fadeCanvasGroup.gameObject);
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.buildIndex == 0)
+        {
+            AssignMainMenuButtonEvents();
+        }
+    }
+
+    private void AssignMainMenuButtonEvents()
+    {
+        Button playButton = GameObject.Find("PlayButton")?.GetComponent<Button>();
+        Button quitButton = GameObject.Find("QuitButton")?.GetComponent<Button>();
+
+        if (playButton != null)
+        {
+            playButton.onClick.RemoveAllListeners();
+            playButton.onClick.AddListener(LoadNextScene);
+        }
+
+        if (quitButton != null)
+        {
+            quitButton.onClick.RemoveAllListeners();
+            quitButton.onClick.AddListener(QuitGame);
         }
     }
 
@@ -37,11 +65,15 @@ public class SceneManagerScript : MonoBehaviour
         }
     }
 
+    public void LoadMainMenu()
+    {
+        StartCoroutine(FadeAndLoadScene(0));
+    }
+
     private IEnumerator FadeAndLoadScene(int sceneIndex)
     {
         yield return StartCoroutine(FadeOut());
         SceneManager.LoadScene(sceneIndex);
-
         yield return StartCoroutine(FadeIn());
     }
 
@@ -59,7 +91,7 @@ public class SceneManagerScript : MonoBehaviour
         fadeCanvasGroup.alpha = 1f;
     }
 
-    
+
     private IEnumerator FadeIn()
     {
         float elapsedTime = 0f;
@@ -72,5 +104,19 @@ public class SceneManagerScript : MonoBehaviour
         }
 
         fadeCanvasGroup.alpha = 0f;
+    }
+
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }
