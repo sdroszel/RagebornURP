@@ -40,7 +40,7 @@ public class AudioManager : MonoBehaviour
             if (!musicSource.isPlaying)
             {
                 musicSource.Play();
-                musicSource.volume = 0.5f;
+                musicSource.volume = 0.25f;
             }
         }
         else
@@ -72,13 +72,13 @@ public class AudioManager : MonoBehaviour
             musicSource.Play();
             for (float t = 0; t < fadeDuration; t += Time.deltaTime)
             {
-                musicSource.volume = Mathf.Lerp(0, 0.5f, t / fadeDuration);
+                musicSource.volume = Mathf.Lerp(0, 0.25f, t / fadeDuration);
                 yield return null;
             }
         }
         else
         {
-            musicSource.volume = 0.5f;
+            musicSource.volume = 0.25f;
         }
     }
 }
