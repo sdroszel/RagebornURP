@@ -19,6 +19,7 @@ public class PlayerCombat : MonoBehaviour
     
     [Header("Weapon Collider")]
     [SerializeField] private Collider weaponCollider;
+    [SerializeField] private AudioClip hitSound;
     
     [Header("Audio Sources")]
     [SerializeField] private AudioSource attackAudioSource;
@@ -158,6 +159,7 @@ public class PlayerCombat : MonoBehaviour
             if (enemy != null)
             {
                 enemy.TakeDamage(currentAttackDamage);
+                attackAudioSource.PlayOneShot(hitSound);
             }
         }
     }

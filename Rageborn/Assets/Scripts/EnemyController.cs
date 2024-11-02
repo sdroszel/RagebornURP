@@ -137,8 +137,10 @@ public class EnemyController : MonoBehaviour
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
         if (distanceToPlayer <= fovRange && angleToPlayer <= lineOfSightAngle / 2)
         {
+            // Use a layer mask to only detect the player
+            int layerMask = LayerMask.GetMask("Player");
             RaycastHit hit;
-            if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange))
+            if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange, layerMask))
             {
                 if (hit.transform == player)
                 {
@@ -149,6 +151,7 @@ public class EnemyController : MonoBehaviour
 
         isChasing = playerInProximity || playerInSight;
     }
+
 
     private void ChasePlayer()
     {

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Floor
   - MusicToggle
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - Enemies
   - Ground
   - Occlusion
-  - 
+  - Player
   - 
   - 
   - 
