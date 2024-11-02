@@ -40,7 +40,7 @@ public class EnemyController : MonoBehaviour
     private bool isWaiting = false;
     private bool isChasing = false;
     private bool canAttack = true;
-    private bool isDead = false; // Track if enemy is dead
+    private bool isDead = false;
     private Animator animator;
 
     private void Awake()
@@ -56,7 +56,7 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        if (isDead) return; // Stop all behavior if the enemy is dead
+        if (isDead) return;
 
         DetectPlayer();
 
@@ -85,7 +85,7 @@ public class EnemyController : MonoBehaviour
 
     private void MoveToWaypoint()
     {
-        if (isDead) return; // Stop moving if dead
+        if (isDead) return;
         animator.SetBool("isWalking", true);
         Transform targetWaypoint = waypoints[currentWaypointIndex];
 
@@ -119,7 +119,7 @@ public class EnemyController : MonoBehaviour
 
     private void DetectPlayer()
     {
-        if (isDead) return; // Stop detection if dead
+        if (isDead) return;
         if (player == null)
         {
             Debug.LogWarning("Player not assigned in EnemyController.");
@@ -137,7 +137,6 @@ public class EnemyController : MonoBehaviour
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
         if (distanceToPlayer <= fovRange && angleToPlayer <= lineOfSightAngle / 2)
         {
-            // Use a layer mask to only detect the player
             int layerMask = LayerMask.GetMask("Player");
             RaycastHit hit;
             if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange, layerMask))
@@ -155,7 +154,7 @@ public class EnemyController : MonoBehaviour
 
     private void ChasePlayer()
     {
-        if (isDead) return; // Stop chasing if dead
+        if (isDead) return;
         animator.SetBool("isRunning", true);
         animator.SetBool("isWalking", false);
 
@@ -173,7 +172,7 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator AttackPlayer()
     {
-        if (isDead) yield break; // Stop attacking if dead
+        if (isDead) yield break;
         canAttack = false;
         animator.SetTrigger("Attack");
 
@@ -218,12 +217,12 @@ public class EnemyController : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return; // Prevent further damage if already dead
+        if (isDead) return;
         currentHealth -= damage;
 
         if (currentHealth > 0)
         {
-            animator.SetTrigger("Hit"); // Only play "Hit" animation if still alive
+            animator.SetTrigger("Hit");
         }
         else
         {
@@ -238,11 +237,9 @@ public class EnemyController : MonoBehaviour
         isDead = true;
         animator.SetTrigger("Die");
 
-        // Disable weapon collider and audio to prevent further actions
         weaponCollider.enabled = false;
         if (audioSource != null) audioSource.Stop();
 
-        // Disable AI actions like movement and attack
         isChasing = false;
     }
 
