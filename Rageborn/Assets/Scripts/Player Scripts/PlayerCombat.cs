@@ -32,6 +32,7 @@ public class PlayerCombat : MonoBehaviour
     private readonly string[] attacks = { "isAttacking1", "isAttacking2", "isAttacking3" };
     private PlayerControls playerControls;
     private int currentAttackDamage;
+    [SerializeField] bool weaponColliderBool;
 
     private void Awake()
     {
@@ -44,6 +45,9 @@ public class PlayerCombat : MonoBehaviour
         {
             weaponCollider.enabled = false;
         }
+
+        DisableWeaponCollider();
+        weaponColliderBool = false;
     }
 
     private void OnEnable()
@@ -140,6 +144,7 @@ public class PlayerCombat : MonoBehaviour
         if (weaponCollider != null)
         {
             weaponCollider.enabled = true;
+            weaponColliderBool = true;
         }
     }
 
@@ -148,6 +153,7 @@ public class PlayerCombat : MonoBehaviour
         if (weaponCollider != null)
         {
             weaponCollider.enabled = false;
+            weaponColliderBool = false;
         }
     }
 
