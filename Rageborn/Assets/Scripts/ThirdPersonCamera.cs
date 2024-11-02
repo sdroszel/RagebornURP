@@ -31,9 +31,6 @@ public class CameraController : MonoBehaviour
 
         inputActions.Player.Look.performed += ctx => lookInput = ctx.ReadValue<Vector2>();
         inputActions.Player.Look.canceled += ctx => lookInput = Vector2.zero;
-
-        inputActions.Player.MouseLook.started += ctx => isLooking = true;
-        inputActions.Player.MouseLook.canceled += ctx => isLooking = false;
     }
 
     private void LateUpdate()

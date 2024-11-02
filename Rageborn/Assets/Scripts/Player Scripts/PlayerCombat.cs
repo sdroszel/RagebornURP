@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,9 +7,13 @@ public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private float attackTime = 1f;
     [SerializeField] private AudioClip attackSound;
+    [SerializeField] private float SpinAttackTime = 1f;
+    [SerializeField] private float spinAttackCooldown = 5f;
+    [SerializeField] private AudioClip spinAttackSound;
     private PlayerController playerController;
     private Animator animator;
     private bool isAttacking = false;
+    private bool isSpinAttackOnCooldown = false;
     private int attackIndex = 0;
     private readonly string[] attacks = { "isAttacking1", "isAttacking2", "isAttacking3" };
     private PlayerControls playerControls;
@@ -27,6 +32,7 @@ public class PlayerCombat : MonoBehaviour
     {
         playerControls.Player.Enable();
         playerControls.Player.Attack.performed += Attack;
+        playerControls.Player.SpinAttack.performed += SpinAttack;
     }
 
     private void OnDisable()
@@ -34,8 +40,43 @@ public class PlayerCombat : MonoBehaviour
         if (playerControls != null)
         {
             playerControls.Player.Attack.performed -= Attack;
+            playerControls.Player.SpinAttack.performed -= SpinAttack;
             playerControls.Disable();
         }
+    }
+
+    private void SpinAttack(InputAction.CallbackContext context)
+    {
+        if (!isSpinAttackOnCooldown)
+        {
+            StartCoroutine(PerformSpinAttack());
+        }
+    }
+
+    private IEnumerator PerformSpinAttack()
+    {
+        playerController.playerAudio.StopFootsteps();
+
+        if (spinAttackSound != null)
+        {
+            audioSource.PlayOneShot(spinAttackSound);
+        }
+
+        animator.SetBool("isSpinAttack", true);
+
+        isAttacking = true;
+        isSpinAttackOnCooldown = true;
+
+        yield return new WaitForSeconds(SpinAttackTime);
+
+        isAttacking = false;
+
+        animator.SetBool("isSpinAttack", false);
+
+        playerController.playerAudio.ResumeFootsteps();
+
+        yield return new WaitForSeconds(spinAttackCooldown);
+        isSpinAttackOnCooldown = false;
     }
 
     private void Attack(InputAction.CallbackContext context)
