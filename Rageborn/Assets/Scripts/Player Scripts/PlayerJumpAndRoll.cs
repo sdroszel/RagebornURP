@@ -13,10 +13,13 @@ public class PlayerJumpAndRoll : MonoBehaviour
     [SerializeField] private float jumpForce = 7f;
     [SerializeField] private float jumpTime = 1f;
     [SerializeField] private float jumpCooldown = 1f;
-    [SerializeField] private float rollSpeedMultiplier = 2f; // Roll speed multiplier
+    [SerializeField] private float rollSpeedMultiplier = 2f;
     [SerializeField] private float rollTime = 1f;
     private bool canJump = true;
     private bool canRoll = true;
+
+    public bool IsJumping { get; private set; }
+    public bool IsRolling { get; private set; }
 
     private void Awake()
     {
@@ -25,7 +28,6 @@ public class PlayerJumpAndRoll : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
 
-        // Initialize PlayerControls only once in Awake
         playerControls = new PlayerControls();
     }
 
@@ -56,17 +58,17 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private IEnumerator PerformJump()
     {
-        playerController.playerAudio.StopFootsteps(); // Stop footsteps audio at start of jump
+        playerController.playerAudio.StopFootsteps();
+        IsJumping = true;
         animator.SetBool("isJumping", true);
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         canJump = false;
 
-        yield return new WaitForSeconds(jumpTime); // Wait for jump animation to complete
+        yield return new WaitForSeconds(jumpTime);
 
         animator.SetBool("isJumping", false);
-        yield return StartCoroutine(JumpCooldown()); // Wait for cooldown before allowing next jump
-
-        playerController.playerAudio.ResumeFootsteps(); // Resume footsteps only after action and cooldown are complete
+        IsJumping = false;
+        StartCoroutine(JumpCooldown());
     }
 
     private IEnumerator JumpCooldown()
@@ -85,7 +87,8 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private IEnumerator PerformRoll()
     {
-        playerController.playerAudio.StopFootsteps(); // Stop footsteps audio at start of roll
+        playerController.playerAudio.StopFootsteps();
+        IsRolling = true;
 
         animator.SetBool("isRolling", true);
         float originalSpeed = playerMovement.CurrentMoveSpeed;
@@ -93,15 +96,15 @@ public class PlayerJumpAndRoll : MonoBehaviour
         animator.speed = 2f;
         canRoll = false;
 
-        yield return new WaitForSeconds(rollTime); // Wait for roll animation to complete
+        yield return new WaitForSeconds(rollTime);
 
         playerMovement.CurrentMoveSpeed = originalSpeed;
         animator.SetBool("isRolling", false);
         animator.speed = 1f;
+        IsRolling = false;
 
-        yield return StartCoroutine(RollCooldown()); // Wait for cooldown before allowing next roll
-
-        playerController.playerAudio.ResumeFootsteps(); // Resume footsteps only after action and cooldown are complete
+        StartCoroutine(RollCooldown());
+        StartCoroutine(JumpCooldown());
     }
 
     private IEnumerator RollCooldown()

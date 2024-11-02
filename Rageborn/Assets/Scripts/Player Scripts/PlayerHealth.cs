@@ -6,14 +6,14 @@ using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private Image healthBarFill; // Reference to the UI element
-    [SerializeField] private Animator animator; // Reference to the Animator component
-    [SerializeField] private TextMeshProUGUI deathText; // Reference to the TextMeshPro UI text
+    [SerializeField] private Image healthBarFill;
+    [SerializeField] private Animator animator;
+    [SerializeField] private TextMeshProUGUI deathText;
     [SerializeField] private float deathMessageDelay = 2f;
-    
+
 
     private float currentHealth;
-    private bool isDead = false; // Track if player is dead to prevent repeated death handling
+    private bool isDead = false;
     private UnityEngine.InputSystem.PlayerInput playerInput;
 
     public bool IsDead => isDead;
@@ -32,7 +32,6 @@ public class PlayerHealth : MonoBehaviour
 
     private void OnDisable()
     {
-        // Ensure input is disabled if player is destroyed or disabled
         if (playerInput != null)
         {
             playerInput.actions.Disable();
@@ -55,7 +54,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float damageAmount)
     {
-        if (isDead) return; // Prevent taking damage if already dead
+        if (isDead) return;
 
         Debug.Log("Taking damage");
         currentHealth -= damageAmount;
@@ -69,7 +68,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void Heal(float healAmount)
     {
-        if (isDead) return; // Prevent healing if dead
+        if (isDead) return;
 
         currentHealth += healAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
@@ -87,7 +86,6 @@ public class PlayerHealth : MonoBehaviour
             animator.SetTrigger("Death");
         }
 
-        // Disable movement scripts
         PlayerMovement playerMovement = GetComponent<PlayerMovement>();
         if (playerMovement != null)
         {
@@ -118,7 +116,7 @@ public class PlayerHealth : MonoBehaviour
     private IEnumerator GoToMainMenuAfterDelay()
     {
         yield return new WaitForSeconds(deathMessageDelay);
-        
+
         SceneManagerScript.instance.LoadMainMenu();
     }
 }

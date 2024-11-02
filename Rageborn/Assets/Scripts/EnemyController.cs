@@ -15,7 +15,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float attackCooldown = 2f;
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private Collider weaponCollider;
-    [SerializeField] private AudioSource audioSource; // Reference to the AudioSource
+    [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip attackSound;
     [SerializeField] private AudioClip hitSound;
 
@@ -25,56 +25,67 @@ public class EnemyController : MonoBehaviour
     private bool canAttack = true;
     private Animator animator;
 
-    private void Awake() {
+    private void Awake()
+    {
         animator = GetComponent<Animator>();
-        if (audioSource == null) {
-            audioSource = GetComponent<AudioSource>(); // Attempt to find an AudioSource if none is assigned
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
         }
-        weaponCollider.enabled = false; // Disable the weapon collider initially
+        weaponCollider.enabled = false;
     }
 
-    private void Update() {
+    private void Update()
+    {
         DetectPlayer();
 
-        if (isChasing) {
+        if (isChasing)
+        {
             float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-            if (distanceToPlayer <= attackRange && canAttack) {
-                // Stop moving and start attacking
+            if (distanceToPlayer <= attackRange && canAttack)
+            {
                 animator.SetBool("isRunning", false);
                 animator.SetBool("isWalking", false);
                 StartCoroutine(AttackPlayer());
-            } else if (distanceToPlayer > attackRange) {
-                // Continue chasing if the player is out of attack range
+            }
+            else if (distanceToPlayer > attackRange)
+            {
                 ChasePlayer();
             }
-        } else if (!isWaiting) {
+        }
+        else if (!isWaiting)
+        {
             animator.SetBool("isRunning", false);
             animator.SetBool("isWalking", true);
             MoveToWaypoint();
         }
     }
 
-    private void MoveToWaypoint() {
+    private void MoveToWaypoint()
+    {
         animator.SetBool("isWalking", true);
         Transform targetWaypoint = waypoints[currentWaypointIndex];
-        
+
         Vector3 direction = (targetWaypoint.position - transform.position).normalized;
         direction.y = 0;
 
         transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.position, moveSpeed * Time.deltaTime);
-        
-        if (direction != Vector3.zero) {
+
+        if (direction != Vector3.zero)
+        {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
 
-        if (Vector3.Distance(transform.position, targetWaypoint.position) < 0.1f) {
+        if (Vector3.Distance(transform.position, targetWaypoint.position) < 0.1f)
+        {
             StartCoroutine(WaitAtWaypoint());
         }
     }
 
-    private IEnumerator WaitAtWaypoint() {
+    private IEnumerator WaitAtWaypoint()
+    {
         animator.SetBool("isWalking", false);
         isWaiting = true;
 
@@ -84,8 +95,10 @@ public class EnemyController : MonoBehaviour
         isWaiting = false;
     }
 
-    private void DetectPlayer() {
-        if (player == null) {
+    private void DetectPlayer()
+    {
+        if (player == null)
+        {
             Debug.LogWarning("Player not assigned in EnemyController.");
             return;
         }
@@ -99,10 +112,13 @@ public class EnemyController : MonoBehaviour
 
         bool playerInSight = false;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
-        if (distanceToPlayer <= fovRange && angleToPlayer <= lineOfSightAngle / 2) {
+        if (distanceToPlayer <= fovRange && angleToPlayer <= lineOfSightAngle / 2)
+        {
             RaycastHit hit;
-            if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange)) {
-                if (hit.transform == player) {
+            if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange))
+            {
+                if (hit.transform == player)
+                {
                     playerInSight = true;
                 }
             }
@@ -111,8 +127,8 @@ public class EnemyController : MonoBehaviour
         isChasing = playerInProximity || playerInSight;
     }
 
-    private void ChasePlayer() {
-        // Activate running animation and move towards the player if not in attack range
+    private void ChasePlayer()
+    {
         animator.SetBool("isRunning", true);
         animator.SetBool("isWalking", false);
 
@@ -121,51 +137,58 @@ public class EnemyController : MonoBehaviour
 
         transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
 
-        if (direction != Vector3.zero) {
+        if (direction != Vector3.zero)
+        {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
     }
 
-    private IEnumerator AttackPlayer() {
+    private IEnumerator AttackPlayer()
+    {
         canAttack = false;
-        animator.SetTrigger("Attack"); // Trigger the attack animation
+        animator.SetTrigger("Attack");
 
-        // Play the attack sound effect
-        if (audioSource != null && attackSound != null) {
+        if (audioSource != null && attackSound != null)
+        {
             audioSource.PlayOneShot(attackSound);
         }
 
-        // Cooldown before the next attack
         yield return new WaitForSeconds(attackCooldown);
         canAttack = true;
     }
 
-    public void EnableWeaponCollider() {
+    public void EnableWeaponCollider()
+    {
         weaponCollider.enabled = true;
     }
 
-    public void DisableWeaponCollider() {
+    public void DisableWeaponCollider()
+    {
         weaponCollider.enabled = false;
     }
 
-    private void OnTriggerEnter(Collider other) {
-        if (other.CompareTag("Player") && weaponCollider.enabled) {
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player") && weaponCollider.enabled)
+        {
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-            if (playerHealth != null) {
+            if (playerHealth != null)
+            {
                 playerHealth.TakeDamage(attackDamage);
             }
 
-            // Play the attack sound effect
-            if (audioSource != null && hitSound != null) {
+            if (audioSource != null && hitSound != null)
+            {
                 audioSource.PlayOneShot(hitSound);
             }
         }
     }
 
-    private void OnDrawGizmosSelected() {
+    private void OnDrawGizmosSelected()
+    {
         Vector3 gizmoPosition = transform.position + Vector3.up * 0.5f;
-        
+
         Gizmos.color = new Color(0, 1, 0, 0.2f);
         Gizmos.DrawSphere(gizmoPosition, detectionRange);
 

@@ -11,7 +11,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] LayerMask obstacleMask;
     [SerializeField] float startYAngle = 20f;
     [SerializeField] float groundOffset = 0.5f;
-    [SerializeField] float minDistance = 1f; // Minimum distance to prevent getting too close
+    [SerializeField] float minDistance = 1f;
 
     private float currentX = 0f;
     private float currentY;
@@ -19,12 +19,14 @@ public class CameraController : MonoBehaviour
     private PlayerControls inputActions;
     private bool isLooking = false;
 
-    private void Awake() {
+    private void Awake()
+    {
         inputActions = new PlayerControls();
         currentY = startYAngle;
     }
-    
-    private void OnEnable() {
+
+    private void OnEnable()
+    {
         inputActions.Player.Enable();
 
         inputActions.Player.Look.performed += ctx => lookInput = ctx.ReadValue<Vector2>();
@@ -34,11 +36,12 @@ public class CameraController : MonoBehaviour
         inputActions.Player.MouseLook.canceled += ctx => isLooking = false;
     }
 
-    private void LateUpdate() {
-        if (target != null) {
+    private void LateUpdate()
+    {
+        if (target != null)
+        {
             Vector3 targetPosition = target.position;
 
-            // Update camera rotation based on look input
             currentX += lookInput.x * sensitivity;
             currentY -= lookInput.y * sensitivity;
             currentY = Mathf.Clamp(currentY, minYAngle, maxYAngle);
@@ -46,29 +49,28 @@ public class CameraController : MonoBehaviour
             Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
             Vector3 desiredPosition = targetPosition - (rotation * Vector3.forward * distance);
 
-            // Raycast from target to desired camera position for occlusion detection
             RaycastHit hit;
             Vector3 direction = (desiredPosition - targetPosition).normalized;
             float rayDistance = Vector3.Distance(targetPosition, desiredPosition);
 
-            if (Physics.Raycast(targetPosition, direction, out hit, rayDistance, obstacleMask)) {
-                // If an obstacle is detected, adjust the camera distance to avoid occlusion
+            if (Physics.Raycast(targetPosition, direction, out hit, rayDistance, obstacleMask))
+            {
                 float adjustedDistance = Mathf.Clamp(hit.distance, minDistance, distance);
                 desiredPosition = targetPosition - (rotation * Vector3.forward * adjustedDistance);
             }
 
-            // Downward raycast to keep camera above ground
-            if (Physics.Raycast(desiredPosition, Vector3.down, out hit, Mathf.Infinity, obstacleMask)) {
+            if (Physics.Raycast(desiredPosition, Vector3.down, out hit, Mathf.Infinity, obstacleMask))
+            {
                 desiredPosition.y = Mathf.Max(desiredPosition.y, hit.point.y + groundOffset);
             }
 
-            // Set the camera position and rotation
             transform.position = desiredPosition;
             transform.LookAt(targetPosition);
         }
     }
 
-    private void OnDisable() {
+    private void OnDisable()
+    {
         inputActions.Player.Disable();
     }
 }

@@ -25,10 +25,10 @@ public class PlayerMovement : MonoBehaviour
         playerControls = new PlayerControls();
     }
 
-    private void OnEnable() {
+    private void OnEnable()
+    {
         playerControls.Player.Enable();
 
-        // Use named methods for subscriptions to ensure proper matching in OnDisable
         playerControls.Player.Move.performed += OnMovePerformed;
         playerControls.Player.Move.canceled += OnMoveCanceled;
         playerControls.Player.Sprint.started += OnSprintStarted;
@@ -37,23 +37,25 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDisable()
     {
-        // Unsubscribe from input events using the same named methods to prevent lingering references
         if (playerControls != null)
         {
             playerControls.Player.Move.performed -= OnMovePerformed;
             playerControls.Player.Move.canceled -= OnMoveCanceled;
             playerControls.Player.Sprint.started -= OnSprintStarted;
             playerControls.Player.Sprint.canceled -= OnSprintCanceled;
-            playerControls.Disable(); // Disable all actions
+            playerControls.Disable();
         }
     }
 
-    private void FixedUpdate() {
+    private void FixedUpdate()
+    {
         MoveCharacter();
     }
 
-    private void MoveCharacter() {
-        if (!playerController.groundCheck.IsGrounded()) {
+    private void MoveCharacter()
+    {
+        if (!playerController.groundCheck.IsGrounded())
+        {
             return;
         }
 
@@ -65,27 +67,39 @@ public class PlayerMovement : MonoBehaviour
 
         bool isMoving = move != Vector3.zero;
 
-        if (playerController.playerCombat.GetAttackStatus()) {
+        if (playerController.playerCombat.GetAttackStatus())
+        {
             adjustedMoveSpeed = walkSpeed * 0.5f;
-        } else if (isSprinting && playerController.playerStamina.CanSprint() && isMoving) {
+        }
+        else if (isSprinting && playerController.playerStamina.CanSprint() && isMoving)
+        {
             adjustedMoveSpeed = sprintSpeed;
             playerController.playerStamina.ConsumeSprint();
-        } else {
+        }
+        else
+        {
             adjustedMoveSpeed = walkSpeed;
             playerController.playerStamina.ReplenishSprint();
         }
 
-        if (isMoving) {
+        if (isMoving && !playerController.playerJumpAndRoll.IsJumping && !playerController.playerJumpAndRoll.IsRolling)
+        {
             Quaternion targetRotation = Quaternion.LookRotation(move);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
 
-            if (!playerController.playerAudio.AudioSource.isPlaying) {
+            if (!playerController.playerAudio.AudioSource.isPlaying)
+            {
                 playerController.playerAudio.AudioSource.clip = playerController.playerAudio.GetCurrentRunningSound();
                 playerController.playerAudio.AudioSource.loop = true;
                 playerController.playerAudio.AudioSource.Play();
             }
-        } else {
-            if (playerController.playerAudio.AudioSource.isPlaying) {
+
+            playerController.playerAudio.AudioSource.pitch = isSprinting ? 1.5f : 1.0f;
+        }
+        else
+        {
+            if (playerController.playerAudio.AudioSource.isPlaying)
+            {
                 playerController.playerAudio.AudioSource.Stop();
             }
         }
@@ -95,6 +109,8 @@ public class PlayerMovement : MonoBehaviour
 
         rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime);
     }
+
+
 
     private void OnMovePerformed(InputAction.CallbackContext ctx)
     {
@@ -108,7 +124,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnSprintStarted(InputAction.CallbackContext ctx)
     {
-        if (playerController.playerStamina.CanSprint()) {
+        if (playerController.playerStamina.CanSprint())
+        {
             isSprinting = true;
         }
     }
@@ -118,7 +135,8 @@ public class PlayerMovement : MonoBehaviour
         isSprinting = false;
     }
 
-    public float CurrentMoveSpeed {
+    public float CurrentMoveSpeed
+    {
         get => adjustedMoveSpeed;
         set => adjustedMoveSpeed = value;
     }

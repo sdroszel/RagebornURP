@@ -20,7 +20,6 @@ public class PlayerCombat : MonoBehaviour
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
 
-        // Initialize PlayerControls only once in Awake
         playerControls = new PlayerControls();
     }
 
@@ -32,7 +31,6 @@ public class PlayerCombat : MonoBehaviour
 
     private void OnDisable()
     {
-        // Unsubscribe from the input event when disabled to prevent lingering references
         if (playerControls != null)
         {
             playerControls.Player.Attack.performed -= Attack;
@@ -56,11 +54,11 @@ public class PlayerCombat : MonoBehaviour
         {
             audioSource.PlayOneShot(attackSound);
         }
-        
+
         animator.SetBool(attacks[attackIndex], true);
         isAttacking = true;
 
-        yield return new WaitForSeconds(attackTime); // Adjust this for the timing of your attack
+        yield return new WaitForSeconds(attackTime);
 
         isAttacking = false;
         animator.SetBool(attacks[attackIndex], false);

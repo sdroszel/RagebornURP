@@ -9,7 +9,7 @@ public class PlayerAudio : MonoBehaviour
     [SerializeField] private float footstepDelay;
     private AudioSource audioSource;
     private bool isDungeonFloor = false;
-    private bool isFootstepsPaused = false; // Track if footsteps are paused
+    private bool isFootstepsPaused = false;
 
     private void Awake()
     {
@@ -36,13 +36,12 @@ public class PlayerAudio : MonoBehaviour
 
     private void SetFootstepAudio()
     {
-        // Ensure footsteps play only if they are not paused
         if (!isFootstepsPaused)
         {
             audioSource.clip = isDungeonFloor ? runningFloor : runningSnow;
             if (!audioSource.isPlaying)
             {
-                audioSource.loop = true; // Enable looping for continuous steps
+                audioSource.loop = true;
                 audioSource.Play();
             }
         }
@@ -51,8 +50,8 @@ public class PlayerAudio : MonoBehaviour
     public void StopFootsteps()
     {
         isFootstepsPaused = true;
-        audioSource.Stop(); // Stop immediately
-        audioSource.clip = null; // Clear the clip to ensure no sound plays accidentally
+        audioSource.Stop();
+        audioSource.clip = null;
     }
 
     public void ResumeFootsteps()
@@ -66,7 +65,6 @@ public class PlayerAudio : MonoBehaviour
 
         isFootstepsPaused = false;
 
-        // Set clip based on floor type and play if moving
         audioSource.clip = isDungeonFloor ? runningFloor : runningSnow;
         if (audioSource.clip != null)
         {
@@ -75,10 +73,8 @@ public class PlayerAudio : MonoBehaviour
         }
     }
 
-    // Expose AudioSource to other components, such as PlayerMovement
     public AudioSource AudioSource => audioSource;
 
-    // Provide the current footstep sound based on the floor type
     public AudioClip GetCurrentRunningSound()
     {
         return isDungeonFloor ? runningFloor : runningSnow;

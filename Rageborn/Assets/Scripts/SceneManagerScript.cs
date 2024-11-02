@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI; // Import UI namespace
+using UnityEngine.UI;
 
 public class SceneManagerScript : MonoBehaviour
 {
@@ -30,7 +30,7 @@ public class SceneManagerScript : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.buildIndex == 0) // Assuming 0 is the main menu scene
+        if (scene.buildIndex == 0)
         {
             AssignMainMenuButtonEvents();
         }
@@ -38,20 +38,19 @@ public class SceneManagerScript : MonoBehaviour
 
     private void AssignMainMenuButtonEvents()
     {
-        // Find buttons in the main menu scene and assign their OnClick events
         Button playButton = GameObject.Find("PlayButton")?.GetComponent<Button>();
         Button quitButton = GameObject.Find("QuitButton")?.GetComponent<Button>();
 
         if (playButton != null)
         {
-            playButton.onClick.RemoveAllListeners(); // Clear any existing listeners
-            playButton.onClick.AddListener(LoadNextScene); // Add LoadNextScene as the event
+            playButton.onClick.RemoveAllListeners();
+            playButton.onClick.AddListener(LoadNextScene);
         }
 
         if (quitButton != null)
         {
             quitButton.onClick.RemoveAllListeners();
-            quitButton.onClick.AddListener(QuitGame); // Add QuitGame as the event
+            quitButton.onClick.AddListener(QuitGame);
         }
     }
 
@@ -66,7 +65,8 @@ public class SceneManagerScript : MonoBehaviour
         }
     }
 
-    public void LoadMainMenu() {
+    public void LoadMainMenu()
+    {
         StartCoroutine(FadeAndLoadScene(0));
     }
 
@@ -91,7 +91,7 @@ public class SceneManagerScript : MonoBehaviour
         fadeCanvasGroup.alpha = 1f;
     }
 
-    
+
     private IEnumerator FadeIn()
     {
         float elapsedTime = 0f;
@@ -108,11 +108,11 @@ public class SceneManagerScript : MonoBehaviour
 
     public void QuitGame()
     {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
             Application.Quit();
-        #endif
+#endif
     }
 
     private void OnDestroy()
