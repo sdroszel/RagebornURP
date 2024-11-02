@@ -3,22 +3,24 @@ using UnityEngine.UI;
 
 public class PlayerStamina : MonoBehaviour
 {
-    [SerializeField] private float maxSprintDuration = 5f;
+    [Header("Stamina Settings")]
+    [SerializeField] private float maxStamina = 5f;
     [SerializeField] private float sprintResumeThreshold = 1f;
-    [SerializeField] private Image sprintBarFill;
+    [SerializeField] private Image staminaBarFill;
+    [SerializeField] private float replenishRate = 0.5f;
     private float currentSprintDuration;
     private bool sprintDisabled;
 
     private void Awake()
     {
-        currentSprintDuration = maxSprintDuration;
+        currentSprintDuration = maxStamina;
     }
 
     private void Update()
     {
-        if (sprintBarFill != null)
+        if (staminaBarFill != null)
         {
-            sprintBarFill.fillAmount = currentSprintDuration / maxSprintDuration;
+            staminaBarFill.fillAmount = currentSprintDuration / maxStamina;
         }
     }
 
@@ -38,12 +40,28 @@ public class PlayerStamina : MonoBehaviour
         }
     }
 
+    public void ConsumeStamina(float amount)
+    {
+        currentSprintDuration -= amount;
+        currentSprintDuration = Mathf.Max(currentSprintDuration, 0f);
+
+        if (currentSprintDuration <= 0)
+        {
+            sprintDisabled = true;
+        }
+    }
+
+    public bool CanConsumeStamina(float amount)
+    {
+        return currentSprintDuration >= amount;
+    }
+
     public void ReplenishSprint()
     {
-        if (currentSprintDuration < maxSprintDuration)
+        if (currentSprintDuration < maxStamina)
         {
-            currentSprintDuration += Time.deltaTime;
-            currentSprintDuration = Mathf.Min(currentSprintDuration, maxSprintDuration);
+            currentSprintDuration += Time.deltaTime * replenishRate;
+            currentSprintDuration = Mathf.Min(currentSprintDuration, maxStamina);
 
             if (currentSprintDuration >= sprintResumeThreshold)
             {

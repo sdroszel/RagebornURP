@@ -10,11 +10,14 @@ public class PlayerJumpAndRoll : MonoBehaviour
     private Animator animator;
     private PlayerControls playerControls;
 
+    [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 7f;
     [SerializeField] private float jumpTime = 1f;
     [SerializeField] private float jumpCooldown = 1f;
+    [Header("Roll Settings")]
     [SerializeField] private float rollSpeedMultiplier = 2f;
     [SerializeField] private float rollTime = 1f;
+    [SerializeField] private float rollStaminaCost = 1f;
     private bool canJump = true;
     private bool canRoll = true;
 
@@ -79,7 +82,7 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private void OnRollPerformed(InputAction.CallbackContext ctx)
     {
-        if (playerController.groundCheck.IsGrounded() && canRoll)
+        if (playerController.groundCheck.IsGrounded() && canRoll && playerController.playerStamina.CanConsumeStamina(rollStaminaCost))
         {
             StartCoroutine(PerformRoll());
         }
@@ -87,6 +90,8 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private IEnumerator PerformRoll()
     {
+        playerController.playerStamina.ConsumeStamina(rollStaminaCost);
+        
         playerController.playerAudio.StopFootsteps();
         IsRolling = true;
 

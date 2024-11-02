@@ -5,11 +5,24 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
+    [Header("Normal Attack Settings")]
     [SerializeField] private float attackTime = 1f;
+    [SerializeField] private int normalAttackDamage = 20;
     [SerializeField] private AudioClip attackSound;
+    
+    [Header("Spin Attack Settings")]
     [SerializeField] private float SpinAttackTime = 1f;
     [SerializeField] private float spinAttackCooldown = 5f;
+    [SerializeField] private float spinAttackStaminaCost = 1f;
+    [SerializeField] private int spinAttackDamage = 30;
     [SerializeField] private AudioClip spinAttackSound;
+    
+    [Header("Weapon Collider")]
+    [SerializeField] private Collider weaponCollider;
+    
+    [Header("Audio Sources")]
+    [SerializeField] private AudioSource attackAudioSource;
+    [SerializeField] private AudioSource footstepAudioSource;
     private PlayerController playerController;
     private Animator animator;
     private bool isAttacking = false;
@@ -17,15 +30,19 @@ public class PlayerCombat : MonoBehaviour
     private int attackIndex = 0;
     private readonly string[] attacks = { "isAttacking1", "isAttacking2", "isAttacking3" };
     private PlayerControls playerControls;
-    private AudioSource audioSource;
+    private int currentAttackDamage;
 
     private void Awake()
     {
         playerController = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
-        audioSource = GetComponent<AudioSource>();
 
         playerControls = new PlayerControls();
+
+        if (weaponCollider != null)
+        {
+            weaponCollider.enabled = false;
+        }
     }
 
     private void OnEnable()
@@ -47,19 +64,24 @@ public class PlayerCombat : MonoBehaviour
 
     private void SpinAttack(InputAction.CallbackContext context)
     {
-        if (!isSpinAttackOnCooldown)
+        if (!isSpinAttackOnCooldown && playerController.playerStamina.CanConsumeStamina(spinAttackStaminaCost))
         {
+            currentAttackDamage = spinAttackDamage;
             StartCoroutine(PerformSpinAttack());
         }
     }
 
     private IEnumerator PerformSpinAttack()
     {
+        playerController.playerStamina.ConsumeStamina(spinAttackStaminaCost);
+
         playerController.playerAudio.StopFootsteps();
+
+        footstepAudioSource.pitch = 0.5f;
 
         if (spinAttackSound != null)
         {
-            audioSource.PlayOneShot(spinAttackSound);
+            attackAudioSource.PlayOneShot(spinAttackSound);
         }
 
         animator.SetBool("isSpinAttack", true);
@@ -83,6 +105,7 @@ public class PlayerCombat : MonoBehaviour
     {
         if (context.performed && !isAttacking)
         {
+            currentAttackDamage = normalAttackDamage;
             StartCoroutine(PerformAttack());
         }
     }
@@ -91,9 +114,11 @@ public class PlayerCombat : MonoBehaviour
     {
         playerController.playerAudio.StopFootsteps();
 
+        footstepAudioSource.pitch = 0.5f;
+
         if (attackSound != null)
         {
-            audioSource.PlayOneShot(attackSound);
+            attackAudioSource.PlayOneShot(attackSound);
         }
 
         animator.SetBool(attacks[attackIndex], true);
@@ -107,6 +132,34 @@ public class PlayerCombat : MonoBehaviour
         attackIndex = (attackIndex + 1) % attacks.Length;
 
         playerController.playerAudio.ResumeFootsteps();
+    }
+
+    private void EnableWeaponCollider()
+    {
+        if (weaponCollider != null)
+        {
+            weaponCollider.enabled = true;
+        }
+    }
+
+    private void DisableWeaponCollider()
+    {
+        if (weaponCollider != null)
+        {
+            weaponCollider.enabled = false;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Enemy") && weaponCollider.enabled)
+        {
+            EnemyController enemy = other.GetComponent<EnemyController>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(currentAttackDamage);
+            }
+        }
     }
 
     public bool GetAttackStatus()

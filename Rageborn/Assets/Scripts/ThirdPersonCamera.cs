@@ -3,15 +3,18 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour
 {
+    [Header("Reference to Player")]
     [SerializeField] Transform target;
+    [Header("Camera Settings")]
     [SerializeField] float distance = 5f;
     [SerializeField] float sensitivity = 2f;
     [SerializeField] float minYAngle = -40f;
     [SerializeField] float maxYAngle = 80f;
-    [SerializeField] LayerMask obstacleMask;
     [SerializeField] float startYAngle = 20f;
     [SerializeField] float groundOffset = 0.5f;
     [SerializeField] float minDistance = 1f;
+    [Header("Clipping Mask")]
+    [SerializeField] LayerMask obstacleMask;
 
     private float currentX = 0f;
     private float currentY;
