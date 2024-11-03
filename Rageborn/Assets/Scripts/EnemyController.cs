@@ -3,26 +3,50 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] private Transform[] waypoints;
+    [System.Serializable]
+    public class Waypoint
+    {
+        public Transform transform;
+        public float waitTime = 1f;
+    }
+
+    [Header("Patrol Waypoint Settings")]
+    [SerializeField] private Waypoint[] waypoints;
+
+    [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private float chaseSpeed = 3.5f;
-    [SerializeField] private float waitTime = 1f;
+
+    [Header("Reference to Player")]
     [SerializeField] private Transform player;
+
+    [Header("Player Detection Settings")]
     [SerializeField] private float detectionRange = 10f;
     [SerializeField] private float fovRange = 15f;
     [SerializeField] private float lineOfSightAngle = 45f;
+
+    [Header("Attack Settings")]
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackCooldown = 2f;
     [SerializeField] private int attackDamage = 10;
+
+    [Header("Weapon Collider Reference")]
     [SerializeField] private Collider weaponCollider;
+
+    [Header("Audio Settings")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip attackSound;
     [SerializeField] private AudioClip hitSound;
+
+    [Header("Health Settings")]
+    [SerializeField] private int maxHealth = 100;
+    private int currentHealth;
 
     private int currentWaypointIndex = 0;
     private bool isWaiting = false;
     private bool isChasing = false;
     private bool canAttack = true;
+    private bool isDead = false;
     private Animator animator;
 
     private void Awake()
@@ -33,10 +57,13 @@ public class EnemyController : MonoBehaviour
             audioSource = GetComponent<AudioSource>();
         }
         weaponCollider.enabled = false;
+        currentHealth = maxHealth;
     }
 
     private void Update()
     {
+        if (isDead) return;
+
         DetectPlayer();
 
         if (isChasing)
@@ -64,13 +91,14 @@ public class EnemyController : MonoBehaviour
 
     private void MoveToWaypoint()
     {
+        if (isDead) return;
         animator.SetBool("isWalking", true);
-        Transform targetWaypoint = waypoints[currentWaypointIndex];
+        Waypoint targetWaypoint = waypoints[currentWaypointIndex];
 
-        Vector3 direction = (targetWaypoint.position - transform.position).normalized;
+        Vector3 direction = (targetWaypoint.transform.position - transform.position).normalized;
         direction.y = 0;
 
-        transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.position, moveSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.transform.position, moveSpeed * Time.deltaTime);
 
         if (direction != Vector3.zero)
         {
@@ -78,13 +106,13 @@ public class EnemyController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
 
-        if (Vector3.Distance(transform.position, targetWaypoint.position) < 0.1f)
+        if (Vector3.Distance(transform.position, targetWaypoint.transform.position) < 0.1f)
         {
-            StartCoroutine(WaitAtWaypoint());
+            StartCoroutine(WaitAtWaypoint(targetWaypoint.waitTime));
         }
     }
 
-    private IEnumerator WaitAtWaypoint()
+    private IEnumerator WaitAtWaypoint(float waitTime)
     {
         animator.SetBool("isWalking", false);
         isWaiting = true;
@@ -97,6 +125,7 @@ public class EnemyController : MonoBehaviour
 
     private void DetectPlayer()
     {
+        if (isDead) return;
         if (player == null)
         {
             Debug.LogWarning("Player not assigned in EnemyController.");
@@ -114,8 +143,9 @@ public class EnemyController : MonoBehaviour
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
         if (distanceToPlayer <= fovRange && angleToPlayer <= lineOfSightAngle / 2)
         {
+            int layerMask = LayerMask.GetMask("Player");
             RaycastHit hit;
-            if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange))
+            if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange, layerMask))
             {
                 if (hit.transform == player)
                 {
@@ -127,8 +157,10 @@ public class EnemyController : MonoBehaviour
         isChasing = playerInProximity || playerInSight;
     }
 
+
     private void ChasePlayer()
     {
+        if (isDead) return;
         animator.SetBool("isRunning", true);
         animator.SetBool("isWalking", false);
 
@@ -146,6 +178,7 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator AttackPlayer()
     {
+        if (isDead) yield break;
         canAttack = false;
         animator.SetTrigger("Attack");
 
@@ -160,7 +193,10 @@ public class EnemyController : MonoBehaviour
 
     public void EnableWeaponCollider()
     {
-        weaponCollider.enabled = true;
+        if (!isDead)
+        {
+            weaponCollider.enabled = true;
+        }
     }
 
     public void DisableWeaponCollider()
@@ -170,7 +206,7 @@ public class EnemyController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && weaponCollider.enabled)
+        if (other.CompareTag("Player") && weaponCollider.enabled && !isDead)
         {
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
             if (playerHealth != null)
@@ -183,6 +219,34 @@ public class EnemyController : MonoBehaviour
                 audioSource.PlayOneShot(hitSound);
             }
         }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        if (isDead) return;
+        currentHealth -= damage;
+
+        if (currentHealth > 0)
+        {
+            animator.SetTrigger("Hit");
+        }
+        else
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        if (isDead) return;
+
+        isDead = true;
+        animator.SetTrigger("Die");
+
+        weaponCollider.enabled = false;
+        if (audioSource != null) audioSource.Stop();
+
+        isChasing = false;
     }
 
     private void OnDrawGizmosSelected()

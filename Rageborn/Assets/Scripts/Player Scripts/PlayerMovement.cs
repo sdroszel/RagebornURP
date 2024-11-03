@@ -9,8 +9,11 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveInput;
     private float adjustedMoveSpeed;
 
+    [Header("Movement Speed Settings")]
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float sprintSpeed = 10f;
+    
+    [Header("Reference to Camera")]
     [SerializeField] private Transform playerCamera;
     private bool isSprinting;
     private PlayerControls playerControls;
@@ -70,38 +73,29 @@ public class PlayerMovement : MonoBehaviour
         if (playerController.playerCombat.GetAttackStatus())
         {
             adjustedMoveSpeed = walkSpeed * 0.5f;
+            playerController.playerAudio.AudioSource.pitch = 0.5f;
         }
         else if (isSprinting && playerController.playerStamina.CanSprint() && isMoving)
         {
             adjustedMoveSpeed = sprintSpeed;
+            playerController.playerAudio.AudioSource.pitch = 1.5f;
             playerController.playerStamina.ConsumeSprint();
         }
         else
         {
             adjustedMoveSpeed = walkSpeed;
+            playerController.playerAudio.AudioSource.pitch = 1.2f;
             playerController.playerStamina.ReplenishSprint();
         }
 
         if (isMoving && !playerController.playerJumpAndRoll.IsJumping && !playerController.playerJumpAndRoll.IsRolling)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(move);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-
-            if (!playerController.playerAudio.AudioSource.isPlaying)
-            {
-                playerController.playerAudio.AudioSource.clip = playerController.playerAudio.GetCurrentRunningSound();
-                playerController.playerAudio.AudioSource.loop = true;
-                playerController.playerAudio.AudioSource.Play();
-            }
-
-            playerController.playerAudio.AudioSource.pitch = isSprinting ? 1.5f : 1.0f;
+            RotateCharacterTowardsMovement(move);
+            UpdateFootstepAudio();
         }
         else
         {
-            if (playerController.playerAudio.AudioSource.isPlaying)
-            {
-                playerController.playerAudio.AudioSource.Stop();
-            }
+            StopFootstepAudio();
         }
 
         animator.SetBool("isSprinting", isMoving && isSprinting && playerController.playerStamina.CanSprint());
@@ -111,6 +105,29 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
+    private void RotateCharacterTowardsMovement(Vector3 move)
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(move);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+    }
+
+    private void UpdateFootstepAudio()
+    {
+        if (!playerController.playerAudio.AudioSource.isPlaying)
+        {
+            playerController.playerAudio.AudioSource.clip = playerController.playerAudio.GetCurrentRunningSound();
+            playerController.playerAudio.AudioSource.loop = true;
+            playerController.playerAudio.AudioSource.Play();
+        }
+    }
+
+    private void StopFootstepAudio()
+    {
+        if (playerController.playerAudio.AudioSource.isPlaying)
+        {
+            playerController.playerAudio.AudioSource.Stop();
+        }
+    }
 
     private void OnMovePerformed(InputAction.CallbackContext ctx)
     {
