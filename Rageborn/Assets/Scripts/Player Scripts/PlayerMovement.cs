@@ -73,18 +73,18 @@ public class PlayerMovement : MonoBehaviour
         if (playerController.playerCombat.GetAttackStatus())
         {
             adjustedMoveSpeed = walkSpeed * 0.5f;
-            playerController.playerAudio.AudioSource.pitch = 0.5f; // Lower pitch while attacking
+            playerController.playerAudio.AudioSource.pitch = 0.5f;
         }
         else if (isSprinting && playerController.playerStamina.CanSprint() && isMoving)
         {
             adjustedMoveSpeed = sprintSpeed;
-            playerController.playerAudio.AudioSource.pitch = 1.5f; // Higher pitch for sprinting
+            playerController.playerAudio.AudioSource.pitch = 1.5f;
             playerController.playerStamina.ConsumeSprint();
         }
         else
         {
             adjustedMoveSpeed = walkSpeed;
-            playerController.playerAudio.AudioSource.pitch = 1.0f; // Normal pitch for walking
+            playerController.playerAudio.AudioSource.pitch = 1.2f;
             playerController.playerStamina.ReplenishSprint();
         }
 

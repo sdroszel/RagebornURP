@@ -3,9 +3,15 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    [System.Serializable]
+    public class Waypoint
+    {
+        public Transform transform;
+        public float waitTime = 1f;
+    }
+
     [Header("Patrol Waypoint Settings")]
-    [SerializeField] private Transform[] waypoints;
-    [SerializeField] private float waitTime = 1f;
+    [SerializeField] private Waypoint[] waypoints;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 2f;
@@ -87,12 +93,12 @@ public class EnemyController : MonoBehaviour
     {
         if (isDead) return;
         animator.SetBool("isWalking", true);
-        Transform targetWaypoint = waypoints[currentWaypointIndex];
+        Waypoint targetWaypoint = waypoints[currentWaypointIndex];
 
-        Vector3 direction = (targetWaypoint.position - transform.position).normalized;
+        Vector3 direction = (targetWaypoint.transform.position - transform.position).normalized;
         direction.y = 0;
 
-        transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.position, moveSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.transform.position, moveSpeed * Time.deltaTime);
 
         if (direction != Vector3.zero)
         {
@@ -100,13 +106,13 @@ public class EnemyController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
         }
 
-        if (Vector3.Distance(transform.position, targetWaypoint.position) < 0.1f)
+        if (Vector3.Distance(transform.position, targetWaypoint.transform.position) < 0.1f)
         {
-            StartCoroutine(WaitAtWaypoint());
+            StartCoroutine(WaitAtWaypoint(targetWaypoint.waitTime));
         }
     }
 
-    private IEnumerator WaitAtWaypoint()
+    private IEnumerator WaitAtWaypoint(float waitTime)
     {
         animator.SetBool("isWalking", false);
         isWaiting = true;

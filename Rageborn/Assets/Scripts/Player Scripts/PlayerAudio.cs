@@ -16,21 +16,24 @@ public class PlayerAudio : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    private void OnTriggerEnter(Collider collider)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (collider.CompareTag("Floor"))
+        if (collision.collider.CompareTag("Floor"))
         {
-            isDungeonFloor = true;
-            SetFootstepAudio();
+            bool newFloorType = true;
+            if (isDungeonFloor != newFloorType)
+            {
+                isDungeonFloor = newFloorType;
+                SetFootstepAudio();
+            }
         }
-    }
-
-    private void OnTriggerExit(Collider collider)
-    {
-        if (collider.CompareTag("Floor"))
+        else
         {
-            isDungeonFloor = false;
-            SetFootstepAudio();
+            if (isDungeonFloor)
+            {
+                isDungeonFloor = false;
+                SetFootstepAudio();
+            }
         }
     }
 

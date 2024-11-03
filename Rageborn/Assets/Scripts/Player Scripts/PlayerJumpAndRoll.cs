@@ -12,6 +12,7 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 7f;
+    [SerializeField] private float forwardJumpForce = 4f;
     [SerializeField] private float jumpTime = 1f;
     [SerializeField] private float jumpCooldown = 1f;
     [Header("Roll Settings")]
@@ -64,7 +65,8 @@ public class PlayerJumpAndRoll : MonoBehaviour
         playerController.playerAudio.StopFootsteps();
         IsJumping = true;
         animator.SetBool("isJumping", true);
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        rb.AddForce((Vector3.up * jumpForce) + (transform.forward * forwardJumpForce), ForceMode.Impulse);
+
         canJump = false;
 
         yield return new WaitForSeconds(jumpTime);
