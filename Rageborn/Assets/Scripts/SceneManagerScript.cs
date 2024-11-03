@@ -32,7 +32,16 @@ public class SceneManagerScript : MonoBehaviour
     {
         if (scene.buildIndex == 0)
         {
+            UnlockAndShowCursor();
             AssignMainMenuButtonEvents();
+        }
+        else if (scene.buildIndex == 1)
+        {
+            UnlockAndShowCursor();
+        }
+        else
+        {
+            LockAndHideCursor();
         }
     }
 
@@ -91,7 +100,6 @@ public class SceneManagerScript : MonoBehaviour
         fadeCanvasGroup.alpha = 1f;
     }
 
-
     private IEnumerator FadeIn()
     {
         float elapsedTime = 0f;
@@ -111,12 +119,25 @@ public class SceneManagerScript : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+        Application.Quit();
 #endif
     }
 
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // Cursor management methods
+    private void LockAndHideCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private void UnlockAndShowCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
