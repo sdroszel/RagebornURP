@@ -54,6 +54,8 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private void OnJumpPerformed(InputAction.CallbackContext ctx)
     {
+        if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) return;
+
         if (playerController.groundCheck.IsGrounded() && canJump)
         {
             StartCoroutine(PerformJump());
@@ -84,6 +86,8 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private void OnRollPerformed(InputAction.CallbackContext ctx)
     {
+        if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) return;
+
         if (playerController.groundCheck.IsGrounded() && canRoll && playerController.playerStamina.CanConsumeStamina(rollStaminaCost))
         {
             StartCoroutine(PerformRoll());

@@ -57,6 +57,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void MoveCharacter()
     {
+        if (PauseMenuScript.isGamePaused) {
+            StopFootstepAudio();
+            return;
+        }
+
         if (!playerController.groundCheck.IsGrounded())
         {
             return;
@@ -74,6 +79,10 @@ public class PlayerMovement : MonoBehaviour
         {
             adjustedMoveSpeed = walkSpeed * 0.5f;
             playerController.playerAudio.AudioSource.pitch = 0.5f;
+        }
+        else if (playerController.playerCombat.GetSpinAttackStatus())
+        {
+            adjustedMoveSpeed = walkSpeed * 2f;
         }
         else if (isSprinting && playerController.playerStamina.CanSprint() && isMoving)
         {
@@ -156,5 +165,10 @@ public class PlayerMovement : MonoBehaviour
     {
         get => adjustedMoveSpeed;
         set => adjustedMoveSpeed = value;
+    }
+
+    public bool IsMoving()
+    {
+        return moveInput != Vector2.zero;
     }
 }

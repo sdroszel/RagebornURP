@@ -19,6 +19,7 @@ public class EnemyController : MonoBehaviour
 
     [Header("Reference to Player")]
     [SerializeField] private Transform player;
+    [SerializeField] private PlayerController playerController;
 
     [Header("Player Detection Settings")]
     [SerializeField] private float detectionRange = 10f;
@@ -48,6 +49,7 @@ public class EnemyController : MonoBehaviour
     private bool canAttack = true;
     private bool isDead = false;
     private Animator animator;
+    
 
     private void Awake()
     {
@@ -63,6 +65,13 @@ public class EnemyController : MonoBehaviour
     private void Update()
     {
         if (isDead) return;
+
+        if (playerController.playerHealth.IsDead)
+        {
+            animator.SetBool("isRunning", false);
+            animator.SetBool("isWalking", true);
+            MoveToWaypoint();
+        }
 
         DetectPlayer();
 
@@ -125,6 +134,7 @@ public class EnemyController : MonoBehaviour
 
     private void DetectPlayer()
     {
+        if (playerController.playerHealth.IsDead) return;
         if (isDead) return;
         if (player == null)
         {
@@ -160,6 +170,7 @@ public class EnemyController : MonoBehaviour
 
     private void ChasePlayer()
     {
+        if (playerController.playerHealth.IsDead) return;
         if (isDead) return;
         animator.SetBool("isRunning", true);
         animator.SetBool("isWalking", false);
@@ -178,7 +189,7 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator AttackPlayer()
     {
-        if (isDead) yield break;
+        if (isDead || playerController.playerHealth.IsDead) yield break;
         canAttack = false;
         animator.SetTrigger("Attack");
 

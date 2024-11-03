@@ -10,10 +10,20 @@ public class PlayerAudio : MonoBehaviour
     private AudioSource audioSource;
     private bool isDungeonFloor = false;
     private bool isFootstepsPaused = false;
+    private PlayerController playerController;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        playerController = GetComponent<PlayerController>();
+    }
+
+    private void Update() 
+    {
+        if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) 
+        {
+            StopFootsteps();
+        }
     }
 
     private void OnCollisionEnter(Collision collision)

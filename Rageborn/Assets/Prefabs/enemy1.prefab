@@ -360,14 +360,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51fe751c63381c54a80be18f1d740979, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waypoints: []
-  waitTime: 1
+  waypoints:
+  - transform: {fileID: 0}
+    waitTime: 1
+  - transform: {fileID: 0}
+    waitTime: 2
   moveSpeed: 1
   chaseSpeed: 3
   player: {fileID: 0}
-  detectionRange: 2.99
-  fovRange: 13.3
-  lineOfSightAngle: 68.4
+  playerController: {fileID: 0}
+  detectionRange: 5.53
+  fovRange: 20
+  lineOfSightAngle: 75
   attackRange: 1.56
   attackCooldown: 1
   attackDamage: 10

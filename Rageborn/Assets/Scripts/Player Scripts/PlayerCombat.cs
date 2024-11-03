@@ -15,6 +15,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float spinAttackCooldown = 5f;
     [SerializeField] private float spinAttackStaminaCost = 1f;
     [SerializeField] private int spinAttackDamage = 30;
+    [SerializeField] private float spinAttackBurstSpeed = 5f;
     [SerializeField] private AudioClip spinAttackSound;
     
     [Header("Weapon Collider")]
@@ -25,19 +26,21 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private AudioSource attackAudioSource;
     [SerializeField] private AudioSource footstepAudioSource;
     private PlayerController playerController;
+    private Rigidbody rb;
     private Animator animator;
     private bool isAttacking = false;
+    private bool isSpinAttacking = false;
     private bool isSpinAttackOnCooldown = false;
     private int attackIndex = 0;
     private readonly string[] attacks = { "isAttacking1", "isAttacking2", "isAttacking3" };
     private PlayerControls playerControls;
     private int currentAttackDamage;
-    [SerializeField] bool weaponColliderBool;
 
     private void Awake()
     {
         playerController = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>();
 
         playerControls = new PlayerControls();
 
@@ -47,7 +50,6 @@ public class PlayerCombat : MonoBehaviour
         }
 
         DisableWeaponCollider();
-        weaponColliderBool = false;
     }
 
     private void OnEnable()
@@ -69,6 +71,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void SpinAttack(InputAction.CallbackContext context)
     {
+        if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) return;
+
         if (!isSpinAttackOnCooldown && playerController.playerStamina.CanConsumeStamina(spinAttackStaminaCost))
         {
             currentAttackDamage = spinAttackDamage;
@@ -91,12 +95,18 @@ public class PlayerCombat : MonoBehaviour
 
         animator.SetBool("isSpinAttack", true);
 
-        isAttacking = true;
+        isSpinAttacking = true;
         isSpinAttackOnCooldown = true;
+
+        if (playerController.playerMovement.IsMoving())
+        {
+            Vector3 burstDirection = transform.forward * spinAttackBurstSpeed * Time.deltaTime;
+            transform.position += burstDirection;
+        }
 
         yield return new WaitForSeconds(SpinAttackTime);
 
-        isAttacking = false;
+        isSpinAttacking = false;
 
         animator.SetBool("isSpinAttack", false);
 
@@ -108,6 +118,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void Attack(InputAction.CallbackContext context)
     {
+        if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) return;
+
         if (context.performed && !isAttacking)
         {
             currentAttackDamage = normalAttackDamage;
@@ -144,7 +156,6 @@ public class PlayerCombat : MonoBehaviour
         if (weaponCollider != null)
         {
             weaponCollider.enabled = true;
-            weaponColliderBool = true;
         }
     }
 
@@ -153,7 +164,6 @@ public class PlayerCombat : MonoBehaviour
         if (weaponCollider != null)
         {
             weaponCollider.enabled = false;
-            weaponColliderBool = false;
         }
     }
 
@@ -173,5 +183,10 @@ public class PlayerCombat : MonoBehaviour
     public bool GetAttackStatus()
     {
         return isAttacking;
+    }
+
+    public bool GetSpinAttackStatus()
+    {
+        return isSpinAttacking;
     }
 }

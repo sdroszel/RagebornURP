@@ -5,6 +5,7 @@ public class CameraController : MonoBehaviour
 {
     [Header("Reference to Player")]
     [SerializeField] Transform target;
+    [SerializeField] PlayerController playerController;
     [Header("Camera Settings")]
     [SerializeField] float distance = 5f;
     [SerializeField] float sensitivity = 2f;
@@ -38,6 +39,10 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (PauseMenuScript.isGamePaused || playerController.playerHealth.IsDead) {
+            return;
+        }
+
         if (target != null)
         {
             Vector3 targetPosition = target.position;
