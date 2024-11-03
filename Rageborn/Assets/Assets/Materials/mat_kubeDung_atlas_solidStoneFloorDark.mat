@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: mat_kubeDung_atlas_solidStoneFloorDark
-  m_Shader: {fileID: -6465566751694194690, guid: e9e2dbaebc35e2a4387b3cb39c4479e6,
-    type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: e9e2dbaebc35e2a4387b3cb39c4479e6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -112,11 +111,9 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - Color_2: {r: 0.57524914, g: 0.75283366, b: 0.8773585, a: 1}
-    - Color_2881158effb24ec39810c127fabd2ce1: {r: 0.3773585, g: 0.30805746, b: 0.24741901,
-        a: 0}
+    - Color_2881158effb24ec39810c127fabd2ce1: {r: 0.3773585, g: 0.30805746, b: 0.24741901, a: 0}
     - Color_3dfa0c1bde3247c78ce45b6b5a9fbdd3: {r: 0, g: 0, b: 0, a: 0}
-    - Color_9e0cf271e6ec4ed59519d7f5c3f519c6: {r: 0.26415086, g: 0.19811311, b: 0.19811311,
-        a: 1}
+    - Color_9e0cf271e6ec4ed59519d7f5c3f519c6: {r: 0.26415086, g: 0.19811311, b: 0.19811311, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
