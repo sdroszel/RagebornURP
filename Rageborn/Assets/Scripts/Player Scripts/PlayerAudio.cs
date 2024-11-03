@@ -10,27 +10,40 @@ public class PlayerAudio : MonoBehaviour
     private AudioSource audioSource;
     private bool isDungeonFloor = false;
     private bool isFootstepsPaused = false;
+    private PlayerController playerController;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        playerController = GetComponent<PlayerController>();
     }
 
-    private void OnTriggerEnter(Collider collider)
+    private void Update() 
     {
-        if (collider.CompareTag("Floor"))
+        if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) 
         {
-            isDungeonFloor = true;
-            SetFootstepAudio();
+            StopFootsteps();
         }
     }
 
-    private void OnTriggerExit(Collider collider)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (collider.CompareTag("Floor"))
+        if (collision.collider.CompareTag("Floor"))
         {
-            isDungeonFloor = false;
-            SetFootstepAudio();
+            bool newFloorType = true;
+            if (isDungeonFloor != newFloorType)
+            {
+                isDungeonFloor = newFloorType;
+                SetFootstepAudio();
+            }
+        }
+        else
+        {
+            if (isDungeonFloor)
+            {
+                isDungeonFloor = false;
+                SetFootstepAudio();
+            }
         }
     }
 

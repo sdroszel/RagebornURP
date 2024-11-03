@@ -4,8 +4,10 @@ using UnityEngine.Events;
 public class PlayerGroundCheck : MonoBehaviour
 {
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float isGroundedDelay = 0.2f;
     public UnityEvent OnLand;
     private bool isGrounded;
+    private float delayTimer;
 
     private void FixedUpdate()
     {
@@ -15,6 +17,15 @@ public class PlayerGroundCheck : MonoBehaviour
         if (!wasGrounded && isGrounded)
         {
             OnLand?.Invoke();
+        }
+
+        if (isGrounded)
+        {
+            delayTimer = isGroundedDelay;
+        }
+        else
+        {
+            delayTimer -= Time.fixedDeltaTime;
         }
     }
 
@@ -26,6 +37,6 @@ public class PlayerGroundCheck : MonoBehaviour
 
     public bool IsGrounded()
     {
-        return isGrounded;
+        return isGrounded || delayTimer > 0f;
     }
 }

@@ -5,9 +5,10 @@ using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
+    [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private Image healthBarFill;
-    [SerializeField] private Animator animator;
+    [Header("Death Settings")]
     [SerializeField] private TextMeshProUGUI deathText;
     [SerializeField] private float deathMessageDelay = 2f;
 
@@ -15,6 +16,7 @@ public class PlayerHealth : MonoBehaviour
     private float currentHealth;
     private bool isDead = false;
     private UnityEngine.InputSystem.PlayerInput playerInput;
+    private Animator animator;
 
     public bool IsDead => isDead;
 
@@ -28,6 +30,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         playerInput = GetComponent<UnityEngine.InputSystem.PlayerInput>();
+        animator = GetComponent<Animator>();
     }
 
     private void OnDisable()
