@@ -8,6 +8,9 @@ public class CheckForPauseButton : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab) && pauseMenu.activeSelf == false)
         {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
             PauseMenuScript.isGamePaused = true;
             pauseMenu.SetActive(true);
             Time.timeScale = 0;
@@ -15,6 +18,9 @@ public class CheckForPauseButton : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Tab) && pauseMenu.activeSelf == true)
         {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
             PauseMenuScript.isGamePaused = false;
             pauseMenu.SetActive(false);
             Time.timeScale = 1;

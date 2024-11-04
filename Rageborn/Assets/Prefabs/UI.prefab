@@ -214,7 +214,6 @@ GameObject:
   - component: {fileID: 843224339923819821}
   - component: {fileID: 4934392978269940957}
   - component: {fileID: 4409954799855901240}
-  - component: {fileID: 3540022650313815684}
   m_Layer: 5
   m_Name: UI
   m_TagString: Untagged
@@ -308,19 +307,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &3540022650313815684
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1513460101987342530}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: beb70da33add6d141832b310c59dc131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pauseMenu: {fileID: 614551579735856743}
 --- !u!1 &2132379330714386055
 GameObject:
   m_ObjectHideFlags: 0
@@ -338,7 +324,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5742818069458998600
 RectTransform:
   m_ObjectHideFlags: 0
@@ -489,9 +475,9 @@ RectTransform:
   m_Father: {fileID: 7646054839092173740}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -806.8, y: -498.2}
-  m_SizeDelta: {x: 488.3669, y: -836.5249}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 123, y: 31}
+  m_SizeDelta: {x: 2380.367, y: 227.4751}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5448083106651543682
 CanvasRenderer:
@@ -680,7 +666,7 @@ GameObject:
   - component: {fileID: 4610807903374456388}
   - component: {fileID: 8546569164563757350}
   m_Layer: 5
-  m_Name: MainMenu
+  m_Name: MainMenuButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1043,9 +1029,9 @@ RectTransform:
   m_Father: {fileID: 7646054839092173740}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -806.8, y: -463.6}
-  m_SizeDelta: {x: 488.3669, y: -836.5249}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 124.4, y: 64.399994}
+  m_SizeDelta: {x: 2366.367, y: 219.4751}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3575969206814650661
 CanvasRenderer:
@@ -1098,7 +1084,7 @@ GameObject:
   - component: {fileID: 214227165103389897}
   - component: {fileID: 4561829478026452454}
   m_Layer: 5
-  m_Name: Continue
+  m_Name: ContinueButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
