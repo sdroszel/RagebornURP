@@ -22,7 +22,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Awake()
     {
-        currentHealth = maxHealth;
+        currentHealth = SceneManagerScript.instance.playerHealth;
 
         if (deathText != null)
         {
@@ -62,6 +62,7 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Taking damage");
         currentHealth -= damageAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        SceneManagerScript.instance.playerHealth = currentHealth;
 
         if (currentHealth <= 0)
         {

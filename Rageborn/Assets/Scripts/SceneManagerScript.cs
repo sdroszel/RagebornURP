@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,6 +10,8 @@ public class SceneManagerScript : MonoBehaviour
     [SerializeField] private CanvasGroup fadeCanvasGroup;
     [SerializeField] private float fadeDuration = 1f;
 
+    public float playerHealth { get; set; }
+
     void Awake()
     {
         if (instance == null)
@@ -16,15 +19,11 @@ public class SceneManagerScript : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
+            playerHealth = 100;
         }
         else if (instance != this)
         {
             Destroy(gameObject);
-        }
-
-        if (fadeCanvasGroup != null)
-        {
-            DontDestroyOnLoad(fadeCanvasGroup.gameObject);
         }
     }
 
@@ -76,6 +75,7 @@ public class SceneManagerScript : MonoBehaviour
 
     public void LoadMainMenu()
     {
+        playerHealth = 100;
         StartCoroutine(FadeAndLoadScene(0));
     }
 
