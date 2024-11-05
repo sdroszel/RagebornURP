@@ -14,7 +14,6 @@ public class CameraController : MonoBehaviour
     [SerializeField] float startYAngle = 20f;
     [SerializeField] float groundOffset = 0.5f;
     [SerializeField] float minDistance = 1f;
-    [SerializeField] float smoothingSpeed = 10f;
     [Header("Clipping Mask")]
     [SerializeField] LayerMask obstacleMask;
 
@@ -23,7 +22,6 @@ public class CameraController : MonoBehaviour
     private Vector2 lookInput;
     private PlayerControls inputActions;
     private bool isLooking = false;
-    private Vector3 smoothedPosition;
 
     private void Awake()
     {
@@ -41,8 +39,7 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (PauseMenuScript.isGamePaused || playerController.playerHealth.IsDead)
-        {
+        if (PauseMenuScript.isGamePaused || playerController.playerHealth.IsDead) {
             return;
         }
 
@@ -72,8 +69,7 @@ public class CameraController : MonoBehaviour
                 desiredPosition.y = Mathf.Max(desiredPosition.y, hit.point.y + groundOffset);
             }
 
-            smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, Time.deltaTime * smoothingSpeed);
-            transform.position = smoothedPosition;
+            transform.position = desiredPosition;
             transform.LookAt(targetPosition);
         }
     }
