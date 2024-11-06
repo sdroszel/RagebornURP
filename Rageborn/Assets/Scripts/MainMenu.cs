@@ -1,24 +1,19 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-   [SerializeField] private GameObject optionsMenu;
-   private Toggle musicToggle;
+    // Start is called before the first frame update
+    public void PlayGame()
+    {
+       SceneManager.LoadSceneAsync(1);
+    }
 
-   private void Start()
-   {
-      optionsMenu.SetActive(true);
-      musicToggle = optionsMenu.transform.Find("MusicToggle").GetComponent<Toggle>();
-      optionsMenu.SetActive(false);
-
-      musicToggle.isOn = AudioManager.instance.isPlaying;
-
-      musicToggle.onValueChanged.AddListener(OnMusicToggleChanged);
-   }
-
-   private void OnMusicToggleChanged(bool isOn)
-   {
-      AudioManager.instance.ToggleMusic(isOn);
-   }
+    // Update is called once per frame
+    public void QuitGame()
+    {
+       Application.Quit(); 
+    }
 }
