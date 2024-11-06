@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
@@ -10,7 +8,6 @@ public class PlayerHealth : MonoBehaviour
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private Image healthBarFill;
-    [SerializeField] private ParticleSystem healEffect;
     [Header("Death Settings")]
     [SerializeField] private TextMeshProUGUI deathText;
     [SerializeField] private float deathMessageDelay = 2f;
@@ -25,8 +22,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Awake()
     {
-        healEffect.Stop();
-        currentHealth = SceneManagerScript.instance.playerHealth;
+        currentHealth = maxHealth;
 
         if (deathText != null)
         {
@@ -48,7 +44,6 @@ public class PlayerHealth : MonoBehaviour
 
     private void Update()
     {
-        PotionHeal();
         UpdateHealthBar();
     }
 
@@ -67,7 +62,6 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Taking damage");
         currentHealth -= damageAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-        SceneManagerScript.instance.playerHealth = currentHealth;
 
         if (currentHealth <= 0)
         {
@@ -78,31 +72,9 @@ public class PlayerHealth : MonoBehaviour
     public void Heal(float healAmount)
     {
         if (isDead) return;
-        StartCoroutine(PerformHeal(healAmount));
-    }
 
-    private IEnumerator PerformHeal(float healAmount)
-    {
         currentHealth += healAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-        SceneManagerScript.instance.playerHealth = currentHealth;
-        healEffect.Play();
-
-        yield return new WaitForSeconds(0.5f);
-
-        healEffect.Stop();
-    }
-
-    private void PotionHeal()
-    {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            if (SceneManagerScript.instance.numOfHealthPotions > 0 && currentHealth != maxHealth)
-            {
-                Heal(15);
-                SceneManagerScript.instance.numOfHealthPotions -= 1;
-            }
-        }
     }
 
     private void HandleDeath()
