@@ -1,17 +1,17 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement; // Use this if you're using TextMeshPro
 
 public class TeleportPromptController : MonoBehaviour
 {
-    [SerializeField] private GameObject teleportPrompt;
+    [SerializeField] private GameObject teleportPrompt; // Reference to the UI Text GameObject
     [SerializeField] private Scene scene;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player")) // Ensure the object has the "Player" tag
         {
-            teleportPrompt.SetActive(true); 
+            teleportPrompt.SetActive(true); // Show the teleport prompt
         }
     }
 
