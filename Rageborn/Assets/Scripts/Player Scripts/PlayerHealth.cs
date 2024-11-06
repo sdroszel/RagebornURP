@@ -105,7 +105,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void HandleDeath()
+    public void HandleDeath()
     {
         if (isDead) return;
         isDead = true;

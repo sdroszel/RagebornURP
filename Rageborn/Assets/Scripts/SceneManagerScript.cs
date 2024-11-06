@@ -12,6 +12,7 @@ public class SceneManagerScript : MonoBehaviour
 
     public float playerHealth { get; set; }
     public int numOfHealthPotions { get; set; }
+    public int remainingTime { get; set; }
 
     void Awake()
     {
@@ -22,6 +23,7 @@ public class SceneManagerScript : MonoBehaviour
             SceneManager.sceneLoaded += OnSceneLoaded;
             playerHealth = 100;
             numOfHealthPotions = 5;
+            remainingTime = 300;
         }
         else if (instance != this)
         {
@@ -79,6 +81,7 @@ public class SceneManagerScript : MonoBehaviour
     {
         playerHealth = 100;
         numOfHealthPotions = 5;
+        remainingTime = 300;
         StartCoroutine(FadeAndLoadScene(0));
     }
 
