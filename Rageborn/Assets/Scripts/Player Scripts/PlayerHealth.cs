@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
 {
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
+    [SerializeField] private float PotionHealAmount = 15f;
     [SerializeField] private Image healthBarFill;
     [SerializeField] private ParticleSystem healEffect;
     [Header("Death Settings")]
@@ -99,7 +100,7 @@ public class PlayerHealth : MonoBehaviour
         {
             if (SceneManagerScript.instance.numOfHealthPotions > 0 && currentHealth != maxHealth)
             {
-                Heal(15);
+                Heal(PotionHealAmount);
                 SceneManagerScript.instance.numOfHealthPotions -= 1;
             }
         }

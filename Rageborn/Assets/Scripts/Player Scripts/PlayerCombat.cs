@@ -169,13 +169,27 @@ public class PlayerCombat : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy") && weaponCollider.enabled)
+        if ((other.CompareTag("Enemy") || other.CompareTag("RangedEnemy")) && weaponCollider.enabled)
         {
-            EnemyController enemy = other.GetComponent<EnemyController>();
-            if (enemy != null)
+            if (other.CompareTag("Enemy"))
             {
-                enemy.TakeDamage(currentAttackDamage);
-                attackAudioSource.PlayOneShot(hitSound);
+                EnemyController enemy = other.GetComponent<EnemyController>();
+
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(currentAttackDamage);
+                    attackAudioSource.PlayOneShot(hitSound);
+                }
+            }
+            else
+            {
+                CasterEnemyController enemy = other.GetComponent<CasterEnemyController>();
+
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(currentAttackDamage);
+                    attackAudioSource.PlayOneShot(hitSound);
+                }
             }
         }
     }
