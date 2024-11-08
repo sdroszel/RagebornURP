@@ -12,6 +12,8 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float PotionHealAmount = 15f;
     [SerializeField] private Image healthBarFill;
     [SerializeField] private ParticleSystem healEffect;
+    [SerializeField] private AudioClip healAudio;
+    [SerializeField] private AudioSource audioSource;
     [Header("Death Settings")]
     [SerializeField] private TextMeshProUGUI deathText;
     [SerializeField] private float deathMessageDelay = 2f;
@@ -21,7 +23,6 @@ public class PlayerHealth : MonoBehaviour
     private bool isDead = false;
     private UnityEngine.InputSystem.PlayerInput playerInput;
     private Animator animator;
-
     public bool IsDead => isDead;
 
     private void Awake()
@@ -84,6 +85,7 @@ public class PlayerHealth : MonoBehaviour
 
     private IEnumerator PerformHeal(float healAmount)
     {
+        audioSource.PlayOneShot(healAudio);
         currentHealth += healAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         SceneManagerScript.instance.playerHealth = currentHealth;

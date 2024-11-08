@@ -1098,10 +1098,11 @@ MonoBehaviour:
   lineOfSightAngle: 121.2
   attackRange: 11.89
   attackCooldown: 3
+  spellVelocity: 15
   spellPrefab: {fileID: 100002, guid: 200e650fba6c8492b87e96e4bc273510, type: 3}
   spellSpawnPoint: {fileID: 7054649954681254862}
   audioSource: {fileID: 402153677677638738}
-  castSound: {fileID: 0}
+  castSound: {fileID: 8300000, guid: b843cddc37ffd403e96086f4d46f4cb5, type: 3}
   maxHealth: 80
 --- !u!82 &402153677677638738
 AudioSource:
@@ -1115,7 +1116,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.252
   m_Pitch: 1
   Loop: 0
   Mute: 0
