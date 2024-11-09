@@ -9,6 +9,7 @@ public class ChestScript : MonoBehaviour
     [SerializeField] private GameObject chestDialogBox;
     [SerializeField] private TextMeshProUGUI chestDialogTextObject;
     [SerializeField] private string checkDialogText;
+    [SerializeField] private GameObject prompt;
     [SerializeField] private Image healthPotionSlot;
     [SerializeField] private Image staminaPotionSlot;
     [SerializeField] private bool isHealthPotion;
@@ -24,6 +25,8 @@ public class ChestScript : MonoBehaviour
     {
         meshFilter = GetComponent<MeshFilter>();
         audioSource = GetComponent<AudioSource>();
+
+        prompt.SetActive(false);
     }
 
     private void Update()
@@ -39,6 +42,10 @@ public class ChestScript : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerInRange = true;
+            if (!isChestOpened)
+            {
+                prompt.SetActive(true);
+            }
         }
     }
 
@@ -48,11 +55,13 @@ public class ChestScript : MonoBehaviour
         {
             isPlayerInRange = false;
             chestDialogBox.SetActive(false);
+            prompt.SetActive(false);
         }
     }
 
     private void OpenChest()
     {
+        prompt.SetActive(false);
         isChestOpened = true;
         meshFilter.mesh = openChestMesh;
         audioSource.PlayOneShot(chestAudio);

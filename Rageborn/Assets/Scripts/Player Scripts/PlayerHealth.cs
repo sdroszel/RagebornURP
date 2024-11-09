@@ -14,11 +14,18 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private ParticleSystem healEffect;
     [SerializeField] private AudioClip healAudio;
     [SerializeField] private AudioSource audioSource;
+
+    [Header("Potion Cooldown Settings")]
+    [SerializeField] private float potionCooldown = 5f;
+    [SerializeField] private TextMeshProUGUI potionCooldownText;
+    [SerializeField] private Image cooldownBG;
+
     [Header("Death Settings")]
     [SerializeField] private TextMeshProUGUI deathText;
     [SerializeField] private float deathMessageDelay = 2f;
 
 
+    private bool isPotionOnCooldown = false;
     private float currentHealth;
     private bool isDead = false;
     private UnityEngine.InputSystem.PlayerInput playerInput;
@@ -27,6 +34,9 @@ public class PlayerHealth : MonoBehaviour
 
     private void Awake()
     {
+        potionCooldownText.text = "";
+        cooldownBG.gameObject.SetActive(false);
+
         healEffect.Stop();
         currentHealth = SceneManagerScript.instance.playerHealth;
 
@@ -98,14 +108,35 @@ public class PlayerHealth : MonoBehaviour
 
     private void PotionHeal()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q) && !isPotionOnCooldown)
         {
             if (SceneManagerScript.instance.numOfHealthPotions > 0 && currentHealth != maxHealth)
             {
                 Heal(PotionHealAmount);
                 SceneManagerScript.instance.numOfHealthPotions -= 1;
+                StartCoroutine(PotionCooldown());
             }
         }
+    }
+
+    private IEnumerator PotionCooldown()
+    {
+        cooldownBG.gameObject.SetActive(true);
+        isPotionOnCooldown = true;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < potionCooldown)
+        {
+            elapsedTime += Time.deltaTime;
+            float remainingTime = potionCooldown - elapsedTime;
+            potionCooldownText.text = Mathf.Ceil(remainingTime).ToString();
+
+            yield return null;
+        }
+
+        potionCooldownText.text = "";
+        isPotionOnCooldown = false;
+        cooldownBG.gameObject.SetActive(false);
     }
 
     public void HandleDeath()

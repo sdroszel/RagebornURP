@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -17,6 +19,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform playerCamera;
     private bool isSprinting;
     private PlayerControls playerControls;
+
+    [Header("UI Elements")]
+    [SerializeField] private Image cooldownBG;
 
     private void Awake()
     {
@@ -47,6 +52,18 @@ public class PlayerMovement : MonoBehaviour
             playerControls.Player.Sprint.started -= OnSprintStarted;
             playerControls.Player.Sprint.canceled -= OnSprintCanceled;
             playerControls.Disable();
+        }
+    }
+
+    private void Update()
+    {
+        if (playerController.playerStamina.CanSprint())
+        {
+            cooldownBG.gameObject.SetActive(false);
+        }
+        else
+        {
+            cooldownBG.gameObject.SetActive(true);
         }
     }
 

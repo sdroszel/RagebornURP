@@ -1,6 +1,8 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerJumpAndRoll : MonoBehaviour
 {
@@ -19,6 +21,11 @@ public class PlayerJumpAndRoll : MonoBehaviour
     [SerializeField] private float rollSpeedMultiplier = 2f;
     [SerializeField] private float rollTime = 1f;
     [SerializeField] private float rollStaminaCost = 1f;
+    [Header("UI Elements")]
+    [SerializeField] private Image rollCooldownImage;
+    [SerializeField] private TextMeshProUGUI rollCooldownText;
+    [SerializeField] private Image jumpCooldownImage;
+
     private bool canJump = true;
     private bool canRoll = true;
 
@@ -33,6 +40,9 @@ public class PlayerJumpAndRoll : MonoBehaviour
         animator = GetComponent<Animator>();
 
         playerControls = new PlayerControls();
+
+        jumpCooldownImage.gameObject.SetActive(false);
+        rollCooldownImage.gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -52,6 +62,14 @@ public class PlayerJumpAndRoll : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (!playerController.playerStamina.CanConsumeStamina(rollStaminaCost))
+        {
+            rollCooldownImage.gameObject.SetActive(true);
+        }
+    }
+
     private void OnJumpPerformed(InputAction.CallbackContext ctx)
     {
         if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) return;
@@ -64,6 +82,7 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private IEnumerator PerformJump()
     {
+        jumpCooldownImage.gameObject.SetActive(true);
         playerController.playerAudio.StopFootsteps();
         IsJumping = true;
         animator.SetBool("isJumping", true);
@@ -82,6 +101,7 @@ public class PlayerJumpAndRoll : MonoBehaviour
     {
         yield return new WaitForSeconds(jumpCooldown);
         canJump = true;
+        jumpCooldownImage.gameObject.SetActive(false);
     }
 
     private void OnRollPerformed(InputAction.CallbackContext ctx)
@@ -96,6 +116,8 @@ public class PlayerJumpAndRoll : MonoBehaviour
 
     private IEnumerator PerformRoll()
     {
+        rollCooldownImage.gameObject.SetActive(true);
+        
         playerController.playerStamina.ConsumeStamina(rollStaminaCost);
         
         playerController.playerAudio.StopFootsteps();
@@ -122,5 +144,6 @@ public class PlayerJumpAndRoll : MonoBehaviour
     {
         yield return new WaitForSeconds(rollTime);
         canRoll = true;
+        rollCooldownImage.gameObject.SetActive(false);
     }
 }
