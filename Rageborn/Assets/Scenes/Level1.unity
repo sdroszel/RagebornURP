@@ -2176,6 +2176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8429b2ff9f21134f91198a3690af257, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioClip: {fileID: 0}
 --- !u!4 &774491193 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3416122829397777537, guid: 86407c9153e5fdc4fb035c645a4028e9,
@@ -5378,6 +5379,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2002269514926010131, guid: 86407c9153e5fdc4fb035c645a4028e9,
+        type: 3}
+      propertyPath: m_Volume
+      value: 0.208
+      objectReference: {fileID: 0}
     - target: {fileID: 2604014283430495803, guid: 86407c9153e5fdc4fb035c645a4028e9,
         type: 3}
       propertyPath: m_Name

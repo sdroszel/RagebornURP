@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,11 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] private float maxStamina = 5f;
     [SerializeField] private float sprintResumeThreshold = 1f;
     [SerializeField] private Image staminaBarFill;
+    [SerializeField] private ParticleSystem staminaEffect;
     [SerializeField] private float replenishRate = 0.5f;
+    [SerializeField] private float replenishAmount = 1f;
+    [SerializeField] private AudioClip staminaAudio;
+    [SerializeField] private AudioSource audioSource;
     private float currentSprintDuration;
     private bool sprintDisabled;
 
@@ -20,6 +25,7 @@ public class PlayerStamina : MonoBehaviour
     {
         if (staminaBarFill != null)
         {
+            PotionStamina();
             staminaBarFill.fillAmount = currentSprintDuration / maxStamina;
         }
     }
@@ -68,5 +74,28 @@ public class PlayerStamina : MonoBehaviour
                 sprintDisabled = false;
             }
         }
+    }
+
+    private void PotionStamina()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (SceneManagerScript.instance.numOfStaminaPotions > 0 && currentSprintDuration != maxStamina)
+            {
+                StartCoroutine(IncreaseStamina(replenishAmount));
+            }
+        }
+    }
+
+    private IEnumerator IncreaseStamina(float replenishAmount)
+    {
+        audioSource.PlayOneShot(staminaAudio);
+        currentSprintDuration += replenishAmount;
+        SceneManagerScript.instance.numOfStaminaPotions -= 1;
+        staminaEffect.Play();
+
+        yield return new WaitForSeconds(0.75f);
+
+        staminaEffect.Stop();
     }
 }

@@ -1,12 +1,17 @@
 using System.Collections;
 using TMPro;
+using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ChestScript : MonoBehaviour
 {
     [SerializeField] private GameObject chestDialogBox;
     [SerializeField] private TextMeshProUGUI chestDialogTextObject;
     [SerializeField] private string checkDialogText;
+    [SerializeField] private Image healthPotionSlot;
+    [SerializeField] private Image staminaPotionSlot;
+    [SerializeField] private bool isHealthPotion;
     [SerializeField] private Mesh openChestMesh;
     [SerializeField] private AudioClip chestAudio;
 
@@ -52,11 +57,24 @@ public class ChestScript : MonoBehaviour
         meshFilter.mesh = openChestMesh;
         audioSource.PlayOneShot(chestAudio);
 
-        SceneManagerScript.instance.numOfHealthPotions++;
-
         if (chestDialogBox != null && chestDialogTextObject != null)
         {
             chestDialogBox.SetActive(true);
+            if (isHealthPotion)
+            {
+                SceneManagerScript.instance.numOfHealthPotions++;
+
+                healthPotionSlot.gameObject.SetActive(true);
+                staminaPotionSlot.gameObject.SetActive(false);
+            }
+            else
+            {
+                SceneManagerScript.instance.numOfStaminaPotions++;
+
+                healthPotionSlot.gameObject.SetActive(false);
+                staminaPotionSlot.gameObject.SetActive(true);
+            }
+            
             chestDialogTextObject.text = checkDialogText;
         }
     }
