@@ -5,17 +5,20 @@ using UnityEngine;
 public class ChestScript : MonoBehaviour
 {
     [SerializeField] private GameObject chestDialogBox;
-    [SerializeField] private GameObject potion;
-    [SerializeField] private TextMeshProUGUI chestDialogText;
+    [SerializeField] private TextMeshProUGUI chestDialogTextObject;
+    [SerializeField] private string checkDialogText;
     [SerializeField] private Mesh openChestMesh;
+    [SerializeField] private AudioClip chestAudio;
 
     private MeshFilter meshFilter;
     private bool isChestOpened = false;
     private bool isPlayerInRange = false;
+    private AudioSource audioSource;
 
     private void Awake()
     {
         meshFilter = GetComponent<MeshFilter>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -47,13 +50,14 @@ public class ChestScript : MonoBehaviour
     {
         isChestOpened = true;
         meshFilter.mesh = openChestMesh;
+        audioSource.PlayOneShot(chestAudio);
 
         SceneManagerScript.instance.numOfHealthPotions++;
 
-        if (chestDialogBox != null && chestDialogText != null)
+        if (chestDialogBox != null && chestDialogTextObject != null)
         {
             chestDialogBox.SetActive(true);
-            chestDialogText.text = "You found a health potion!";
+            chestDialogTextObject.text = checkDialogText;
         }
     }
 }

@@ -141,7 +141,7 @@ public class CasterEnemyController : MonoBehaviour
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
         if (distanceToPlayer <= fovRange && angleToPlayer <= lineOfSightAngle / 2)
         {
-            int layerMask = LayerMask.GetMask("Player");
+            int layerMask = LayerMask.GetMask("Player", "Default", "Ground");
             RaycastHit hit;
             if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange, layerMask))
             {
@@ -154,6 +154,7 @@ public class CasterEnemyController : MonoBehaviour
 
         isPlayerDetected = playerInProximity || playerInSight;
     }
+
 
     private IEnumerator CastSpell()
     {
