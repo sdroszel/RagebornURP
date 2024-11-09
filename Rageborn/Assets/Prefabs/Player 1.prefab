@@ -1324,6 +1324,9 @@ MonoBehaviour:
   healEffect: {fileID: 196177359170655972}
   healAudio: {fileID: 8300000, guid: 7db824204de9e4ef0a79f546ba105529, type: 3}
   audioSource: {fileID: 3937626368752123578}
+  potionCooldown: 5
+  potionCooldownText: {fileID: 0}
+  cooldownBG: {fileID: 0}
   deathText: {fileID: 0}
   deathMessageDelay: 2
 --- !u!114 &2108158489636193253
@@ -1341,6 +1344,7 @@ MonoBehaviour:
   walkSpeed: 5
   sprintSpeed: 10
   playerCamera: {fileID: 0}
+  cooldownBG: {fileID: 0}
 --- !u!114 &7292590693452834488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1360,6 +1364,9 @@ MonoBehaviour:
   rollSpeedMultiplier: 2
   rollTime: 0.5
   rollStaminaCost: 1
+  rollCooldownImage: {fileID: 0}
+  rollCooldownText: {fileID: 0}
+  jumpCooldownImage: {fileID: 0}
 --- !u!114 &3664386488081700637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1385,6 +1392,9 @@ MonoBehaviour:
   hitSound: {fileID: 8300000, guid: aa5eb5c42c139404b8659a5755af6d25, type: 3}
   attackAudioSource: {fileID: 3937626368752123578}
   footstepAudioSource: {fileID: 495692684757888191}
+  spinAttackCooldownText: {fileID: 0}
+  spinAttackCooldownImage: {fileID: 0}
+  basicAttackCooldownImage: {fileID: 0}
 --- !u!114 &3001376566649984727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1423,6 +1433,9 @@ MonoBehaviour:
   replenishAmount: 1
   staminaAudio: {fileID: 8300000, guid: 94743f24704174ae9b6ccbe2756a8fa4, type: 3}
   audioSource: {fileID: 3937626368752123578}
+  potionCooldown: 5
+  potionCooldownText: {fileID: 0}
+  cooldownBG: {fileID: 0}
 --- !u!114 &2851571681022215676
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -29,17 +29,6 @@ public class PlayerGroundCheck : MonoBehaviour
         // Use CheckSphere instead of SphereCast for simpler ground detection
         Vector3 checkPosition = transform.position + Vector3.up * groundOffset;
         isGrounded = Physics.CheckSphere(checkPosition, groundCheckRadius, groundLayer);
-
-        // Debugging output
-        Debug.DrawRay(checkPosition, Vector3.down * (groundCheckRadius + groundOffset), Color.red);
-        if (isGrounded)
-        {
-            Debug.Log("Ground detected");
-        }
-        else
-        {
-            Debug.Log("No ground detected");
-        }
     }
 
     public bool IsGrounded()

@@ -204,9 +204,36 @@ public class EnemyController : MonoBehaviour
             audioSource.PlayOneShot(attackSound);
         }
 
+        float attackDuration = animator.GetCurrentAnimatorStateInfo(0).length;
+
+        // Rotate toward the player for the duration of the attack
+        float elapsedTime = 0f;
+        while (elapsedTime < attackDuration)
+        {
+            FacePlayer();
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
         yield return new WaitForSeconds(attackCooldown);
         canAttack = true;
     }
+
+    private void FacePlayer()
+    {
+        if (player != null)
+        {
+            Vector3 direction = (player.position - transform.position).normalized;
+            direction.y = 0;
+
+            if (direction != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+            }
+        }
+    }
+
 
     public void EnableWeaponCollider()
     {

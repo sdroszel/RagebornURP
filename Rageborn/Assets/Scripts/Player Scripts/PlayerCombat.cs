@@ -86,6 +86,10 @@ public class PlayerCombat : MonoBehaviour
         {
             spinAttackCooldownImage.gameObject.SetActive(true);
         }
+        else if (playerController.playerStamina.CanConsumeStamina(spinAttackStaminaCost) && !isSpinAttackOnCooldown)
+        {
+            spinAttackCooldownImage.gameObject.SetActive(false);
+        }
     }
 
     private void SpinAttack(InputAction.CallbackContext context)

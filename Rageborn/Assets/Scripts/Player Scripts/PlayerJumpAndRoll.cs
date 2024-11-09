@@ -68,6 +68,10 @@ public class PlayerJumpAndRoll : MonoBehaviour
         {
             rollCooldownImage.gameObject.SetActive(true);
         }
+        else if (playerController.playerStamina.CanConsumeStamina(rollStaminaCost) && canRoll)
+        {
+            rollCooldownImage.gameObject.SetActive(false);
+        }
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext ctx)

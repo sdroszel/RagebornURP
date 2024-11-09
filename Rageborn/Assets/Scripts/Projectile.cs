@@ -18,7 +18,7 @@ public class Projectile : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         audioSource.PlayOneShot(travelSound);
         // Destroy the projectile after `lifetime` seconds if it doesn’t hit anything
-        Destroy(gameObject, lifetime);
+        //Destroy(gameObject, lifetime);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -47,7 +47,7 @@ public class Projectile : MonoBehaviour
             }
 
             // Destroy sound and particle effect object after both are complete
-            Destroy(soundObject, Mathf.Max(hitSound.length, particleSystem.main.duration));
+            Destroy(soundObject, 4f);
         }
 
         // Check if the projectile hit the player
@@ -57,10 +57,11 @@ public class Projectile : MonoBehaviour
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(damage);
+                Destroy(gameObject);
             }
         }
 
         // Destroy the projectile after the delay, even if it didn't hit the player
-        Destroy(gameObject, destroyDelay);
+        Destroy(gameObject);
     }
 }
