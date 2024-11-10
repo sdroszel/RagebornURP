@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
+// Handles changing music for boss room
 public class BossMusic : MonoBehaviour
 {
     [SerializeField] private AudioClip bossMusic;

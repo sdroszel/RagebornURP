@@ -1,15 +1,21 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
+/// <summary>
+/// This class handles the music in the game.
+/// It uses the singleton pattern and doNotDestroyOnLoad
+/// to make sure that it is the only one that exists between scenes.
+/// </summary>
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager instance;
-    public bool isPlaying = true;
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private float loopFade = 0.5f;
 
+    public static AudioManager instance;
+    public bool isPlaying = true;
+
+    // Creates new audioManager if none exists and presists through scene changes
     void Awake()
     {
         if (instance == null)
@@ -19,10 +25,12 @@ public class AudioManager : MonoBehaviour
         }
         else if (instance != this)
         {
+            // Makes sure only one exists
             Destroy(gameObject);
         }
     }
 
+    // Starts playing the background music
     void Start()
     {
         if (musicSource != null && !musicSource.isPlaying)
@@ -31,6 +39,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    // Toggles the music on or off
     public void ToggleMusic(bool isOn)
     {
         isPlaying = isOn;
@@ -49,11 +58,13 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    // Used to change the background music in other levels
     public void ChangeMusic(AudioClip newClip)
     {
         StartCoroutine(FadeOutAndChangeClip(newClip));
     }
 
+    // Fades the music out when changing tracks
     private IEnumerator FadeOutAndChangeClip(AudioClip newClip)
     {
         float startVolume = musicSource.volume;
@@ -65,6 +76,7 @@ public class AudioManager : MonoBehaviour
         }
 
         musicSource.Stop();
+        
         musicSource.clip = newClip;
 
         if (isPlaying)

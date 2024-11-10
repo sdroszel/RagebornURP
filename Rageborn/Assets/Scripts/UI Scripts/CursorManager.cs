@@ -16,7 +16,7 @@ public class CursorManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) // Example for pause menu
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             UnlockAndShowCursor();
         }

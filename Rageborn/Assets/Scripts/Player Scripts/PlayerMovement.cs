@@ -1,16 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using System.Collections;
 
+/// <summary>
+/// This class handles player movement
+/// </summary>
 public class PlayerMovement : MonoBehaviour
 {
-    private PlayerController playerController;
-    private Rigidbody rb;
-    private Animator animator;
-    private Vector2 moveInput;
-    private float adjustedMoveSpeed;
-
     [Header("Movement Speed Settings")]
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float sprintSpeed = 10f;
@@ -23,16 +19,27 @@ public class PlayerMovement : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private Image cooldownBG;
 
+    private PlayerController playerController;
+    private Rigidbody rb;
+    private Animator animator;
+
+    private Vector2 moveInput;
+
+    private float adjustedMoveSpeed;
+
+    // Gets needed components and sets default movement speed
     private void Awake()
     {
         playerController = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+
         adjustedMoveSpeed = walkSpeed;
 
         playerControls = new PlayerControls();
     }
 
+    // Enables player input controls
     private void OnEnable()
     {
         playerControls.Player.Enable();
@@ -43,6 +50,7 @@ public class PlayerMovement : MonoBehaviour
         playerControls.Player.Sprint.canceled += OnSprintCanceled;
     }
 
+    // Disables player input controls
     private void OnDisable()
     {
         if (playerControls != null)
@@ -55,30 +63,37 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Updates every frame to update UI elements
     private void Update()
     {
         if (playerController.playerStamina.CanSprint())
         {
+            // Hide sprint cooldown UI if player has enough stamina
             cooldownBG.gameObject.SetActive(false);
         }
         else
         {
+            // Shows sprint cooldown UI if player is out of stamina
             cooldownBG.gameObject.SetActive(true);
         }
     }
 
+    // Update for character movement
     private void FixedUpdate()
     {
         MoveCharacter();
     }
 
+    // Handles character movement
     private void MoveCharacter()
     {
-        if (PauseMenuScript.isGamePaused) {
+        if (PauseMenuScript.isGamePaused)
+        {
             StopFootstepAudio();
             return;
         }
 
+        // Skip if player is not grounded
         if (!playerController.groundCheck.IsGrounded())
         {
             return;
@@ -86,12 +101,34 @@ public class PlayerMovement : MonoBehaviour
 
         rb.AddForce(Vector3.down * 5f, ForceMode.Force);
 
+        // Gets player movement vector
         Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
         move = playerCamera.TransformDirection(move);
         move.y = 0;
 
         bool isMoving = move != Vector3.zero;
 
+        AdjustMovementSpeed(isMoving);
+
+        if (isMoving && !playerController.playerJumpAndRoll.IsJumping && !playerController.playerJumpAndRoll.IsRolling)
+        {
+            RotateCharacterTowardsMovement(move);
+            UpdateFootstepAudio();
+        }
+        else
+        {
+            StopFootstepAudio();
+        }
+
+        animator.SetBool("isSprinting", isMoving && isSprinting && playerController.playerStamina.CanSprint());
+        animator.SetBool("isRunning", isMoving);
+
+        rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime);
+    }
+
+    // Helper function to adjust player movement speed based on player actions
+    private void AdjustMovementSpeed(bool isMoving)
+    {
         if (playerController.playerCombat.GetAttackStatus())
         {
             adjustedMoveSpeed = walkSpeed * 0.5f;
@@ -111,32 +148,18 @@ public class PlayerMovement : MonoBehaviour
         {
             adjustedMoveSpeed = walkSpeed;
             playerController.playerAudio.AudioSource.pitch = 1.2f;
-            playerController.playerStamina.ReplenishSprint();
+            playerController.playerStamina.ReplenishStamina();
         }
-
-        if (isMoving && !playerController.playerJumpAndRoll.IsJumping && !playerController.playerJumpAndRoll.IsRolling)
-        {
-            RotateCharacterTowardsMovement(move);
-            UpdateFootstepAudio();
-        }
-        else
-        {
-            StopFootstepAudio();
-        }
-
-        animator.SetBool("isSprinting", isMoving && isSprinting && playerController.playerStamina.CanSprint());
-        animator.SetBool("isRunning", isMoving);
-
-        rb.MovePosition(rb.position + move.normalized * adjustedMoveSpeed * Time.fixedDeltaTime);
     }
 
-
+    // Rotates player to face the movement direction
     private void RotateCharacterTowardsMovement(Vector3 move)
     {
         Quaternion targetRotation = Quaternion.LookRotation(move);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
 
+    // Updates the player footstep audio
     private void UpdateFootstepAudio()
     {
         if (!playerController.playerAudio.AudioSource.isPlaying)
@@ -147,6 +170,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Stops the player footstep audio
     private void StopFootstepAudio()
     {
         if (playerController.playerAudio.AudioSource.isPlaying)
@@ -155,17 +179,20 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnMovePerformed(InputAction.CallbackContext ctx)
+    // Handles player move input
+    private void OnMovePerformed(InputAction.CallbackContext context)
     {
-        moveInput = ctx.ReadValue<Vector2>();
+        moveInput = context.ReadValue<Vector2>();
     }
 
-    private void OnMoveCanceled(InputAction.CallbackContext ctx)
+    // Handles stoping player move input
+    private void OnMoveCanceled(InputAction.CallbackContext context)
     {
         moveInput = Vector2.zero;
     }
 
-    private void OnSprintStarted(InputAction.CallbackContext ctx)
+    // Handles player sprint input
+    private void OnSprintStarted(InputAction.CallbackContext context)
     {
         if (playerController.playerStamina.CanSprint())
         {
@@ -173,17 +200,20 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnSprintCanceled(InputAction.CallbackContext ctx)
+    // Handles player stop sprinting input
+    private void OnSprintCanceled(InputAction.CallbackContext context)
     {
         isSprinting = false;
     }
 
+    // Public getter/setter for movement speed
     public float CurrentMoveSpeed
     {
         get => adjustedMoveSpeed;
         set => adjustedMoveSpeed = value;
     }
 
+    // Used to see if player is moving
     public bool IsMoving()
     {
         return moveInput != Vector2.zero;

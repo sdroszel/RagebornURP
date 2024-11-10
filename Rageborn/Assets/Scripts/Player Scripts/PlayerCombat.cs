@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class handles the player combat logic
+/// </summary>
 public class PlayerCombat : MonoBehaviour
 {
     [Header("Normal Attack Settings")]
@@ -61,6 +64,7 @@ public class PlayerCombat : MonoBehaviour
 
         DisableWeaponCollider();
 
+        // Set default UI states
         spinAttackCooldownText.text = "";
         spinAttackCooldownImage.gameObject.SetActive(false);
         basicAttackCooldownImage.gameObject.SetActive(false);
@@ -162,6 +166,7 @@ public class PlayerCombat : MonoBehaviour
             yield return null;
         }
 
+        // Reset UI states
         spinAttackCooldownText.text = "";
         spinAttackCooldownImage.gameObject.SetActive(false);
         isSpinAttackOnCooldown = false;
@@ -183,6 +188,7 @@ public class PlayerCombat : MonoBehaviour
     private IEnumerator PerformAttack()
     {
         basicAttackCooldownImage.gameObject.SetActive(true);
+
         playerController.playerAudio.StopFootsteps();
 
         footstepAudioSource.pitch = 0.5f;
@@ -193,11 +199,15 @@ public class PlayerCombat : MonoBehaviour
         }
 
         animator.SetBool(attacks[attackIndex], true);
+        
         isAttacking = true;
 
         yield return new WaitForSeconds(attackTime);
+
         basicAttackCooldownImage.gameObject.SetActive(false);
+
         isAttacking = false;
+
         animator.SetBool(attacks[attackIndex], false);
 
         attackIndex = (attackIndex + 1) % attacks.Length;

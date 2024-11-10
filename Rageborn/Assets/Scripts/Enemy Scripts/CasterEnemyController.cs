@@ -1,8 +1,12 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// This class handles the ranged enemy logic
+/// </summary>
 public class CasterEnemyController : MonoBehaviour
 {
+    // Waypoint class holds waypoint position and wait time
     [System.Serializable]
     public class Waypoint
     {
@@ -38,33 +42,43 @@ public class CasterEnemyController : MonoBehaviour
 
     [Header("Health Settings")]
     [SerializeField] private int maxHealth = 80;
-    private int currentHealth;
 
+    private int currentHealth;
     private int currentWaypointIndex = 0;
+
     private bool isWaiting = false;
     private bool isPlayerDetected = false;
     private bool canCast = true;
     private bool isDead = false;
+
     private Animator animator;
 
+    // Gets need components and sets health
     private void Awake()
     {
         animator = GetComponent<Animator>();
+
         if (audioSource == null)
         {
             audioSource = GetComponent<AudioSource>();
         }
+
         currentHealth = maxHealth;
     }
 
+    // Logical loop for enemy behavior
     private void Update()
     {
+        // Skip if this enemy is dead
         if (isDead) return;
 
+        // Logic is player is dead
         if (playerController.playerHealth.IsDead)
         {
             animator.SetBool("isWalking", true);
+
             Patrol();
+
             return;
         }
 
@@ -77,6 +91,7 @@ public class CasterEnemyController : MonoBehaviour
             if (distanceToPlayer <= attackRange)
             {
                 animator.SetBool("isWalking", false);
+
                 StartCoroutine(CastSpell());
             }
             else
@@ -90,15 +105,17 @@ public class CasterEnemyController : MonoBehaviour
         }
     }
 
+    // Handles the patrolling logic
     private void Patrol()
     {
         if (isDead || isWaiting) return;
 
         Waypoint targetWaypoint = waypoints[currentWaypointIndex];
+
+        // Gets the waypoint direction vector
         Vector3 direction = (targetWaypoint.transform.position - transform.position).normalized;
         direction.y = 0;
 
-        // Set the walking animation
         animator.SetBool("isWalking", true);
 
         transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.transform.position, moveSpeed * Time.deltaTime);
@@ -115,34 +132,54 @@ public class CasterEnemyController : MonoBehaviour
         }
     }
 
+    // Handles enemy waiting at each waypoint
     private IEnumerator WaitAtWaypoint(float waitTime)
     {
         animator.SetBool("isWalking", false);
+
         isWaiting = true;
 
         yield return new WaitForSeconds(waitTime);
 
+        // Increment waypoint index
         currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+
         isWaiting = false;
     }
 
+    // Handles detecting player
     private void DetectPlayer()
     {
+        // Skip if player is dead or this enemy is dead
         if (playerController.playerHealth.IsDead || isDead) return;
 
+        // Get enemy position
         Vector3 enemyPosition = transform.position + Vector3.up * 1f;
+
+        // Get player position
         Vector3 playerPosition = player.position + Vector3.up * 1f;
+
+        // Get vector for player direction
         Vector3 directionToPlayer = (playerPosition - enemyPosition).normalized;
 
+        // Gets the distance to player
         float distanceToPlayer = Vector3.Distance(enemyPosition, playerPosition);
+
+        // Checks if player is in detection proximity
         bool playerInProximity = distanceToPlayer <= detectionRange;
 
         bool playerInSight = false;
+
+        // FOV angle
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
+
+        // Checks if player is in FOV range and in line of sight
         if (distanceToPlayer <= fovRange && angleToPlayer <= lineOfSightAngle / 2)
         {
             int layerMask = LayerMask.GetMask("Player", "Default", "Ground");
+            
             RaycastHit hit;
+
             if (Physics.Raycast(enemyPosition, directionToPlayer, out hit, fovRange, layerMask))
             {
                 if (hit.transform == player)
@@ -156,13 +193,17 @@ public class CasterEnemyController : MonoBehaviour
     }
 
 
+    // Handles casting logic
     private IEnumerator CastSpell()
     {
+        // Skip if enemy or player is dead or can not cast yet
         if (isDead || playerController.playerHealth.IsDead || !canCast) yield break;
 
-        canCast = false;  // Prevents another cast from starting
+        canCast = false;
+
         animator.SetTrigger("Cast");
 
+        // Rotate to face player
         Vector3 directionToPlayer = (player.position - transform.position).normalized;
         directionToPlayer.y = 0;
         transform.rotation = Quaternion.LookRotation(directionToPlayer);
@@ -172,24 +213,30 @@ public class CasterEnemyController : MonoBehaviour
             audioSource.PlayOneShot(castSound);
         }
 
-        yield return new WaitForSeconds(0.5f); // Adjust for casting animation length
+        yield return new WaitForSeconds(0.5f);
 
         // Instantiate the spell
         GameObject spell = Instantiate(spellPrefab, spellSpawnPoint.position, spellSpawnPoint.rotation);
         Rigidbody rb = spell.GetComponent<Rigidbody>();
+        
         if (rb != null)
         {
+            // Project spell toward player
             Vector3 projectileDirection = (player.position - spellSpawnPoint.position).normalized;
             rb.velocity = projectileDirection * spellVelocity;
         }
 
-        yield return new WaitForSeconds(attackCooldown); // Cooldown before next cast
+        yield return new WaitForSeconds(attackCooldown);
+
         canCast = true;
     }
 
+    // Handles taking damage
     public void TakeDamage(int damage)
     {
+        // Skip if dead
         if (isDead) return;
+
         currentHealth -= damage;
 
         if (currentHealth > 0)
@@ -202,11 +249,13 @@ public class CasterEnemyController : MonoBehaviour
         }
     }
 
+    // Handles death logic
     private void Die()
     {
         if (isDead) return;
 
         isDead = true;
+
         animator.SetTrigger("Die");
 
         if (audioSource != null) audioSource.Stop();
@@ -214,6 +263,7 @@ public class CasterEnemyController : MonoBehaviour
         isPlayerDetected = false;
     }
 
+    // Used is editor to see the FOV and detection proximity
     private void OnDrawGizmosSelected()
     {
         Vector3 gizmoPosition = transform.position + Vector3.up * 0.5f;

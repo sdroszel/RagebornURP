@@ -17,9 +17,9 @@ public class TeleportPromptController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player")) // Ensure the object has the "Player" tag
+        if (other.CompareTag("Player"))
         {
-            teleportPrompt.SetActive(false); // Hide the teleport prompt
+            teleportPrompt.SetActive(false);
         }
     }
 
@@ -27,7 +27,7 @@ public class TeleportPromptController : MonoBehaviour
     {
         if (teleportPrompt.activeSelf && Input.GetKeyDown(KeyCode.E))
         {
-            Teleport(); // Call the teleport function when E is pressed
+            Teleport();
         }
     }
 

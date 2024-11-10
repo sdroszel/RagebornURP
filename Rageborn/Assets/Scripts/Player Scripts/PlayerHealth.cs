@@ -1,10 +1,11 @@
-using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class handles the player health components
+/// </summary>
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Health Settings")]
@@ -21,34 +22,40 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private Image cooldownBG;
 
     [Header("Death Settings")]
-    [SerializeField] private TextMeshProUGUI deathText;
+    [SerializeField] private TextMeshProUGUI gameoverText;
     [SerializeField] private float deathMessageDelay = 2f;
 
 
     private bool isPotionOnCooldown = false;
-    private float currentHealth;
     private bool isDead = false;
+    private float currentHealth;
+    
     private UnityEngine.InputSystem.PlayerInput playerInput;
     private Animator animator;
+
     public bool IsDead => isDead;
 
+    // Sets UI state and gets needed components
     private void Awake()
     {
         potionCooldownText.text = "";
         cooldownBG.gameObject.SetActive(false);
 
         healEffect.Stop();
+
+        // Update current health within scene manager
         currentHealth = SceneManagerScript.instance.playerHealth;
 
-        if (deathText != null)
+        if (gameoverText != null)
         {
-            deathText.gameObject.SetActive(false);
+            gameoverText.gameObject.SetActive(false);
         }
 
         playerInput = GetComponent<UnityEngine.InputSystem.PlayerInput>();
         animator = GetComponent<Animator>();
     }
 
+    // Disables player input
     private void OnDisable()
     {
         if (playerInput != null)
@@ -58,12 +65,14 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    // Updates every frame to check for potion use and updates health bar
     private void Update()
     {
         PotionHeal();
         UpdateHealthBar();
     }
 
+    // Updates health bar
     private void UpdateHealthBar()
     {
         if (healthBarFill != null)
@@ -72,13 +81,16 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    // Handles player taking damage
     public void TakeDamage(float damageAmount)
     {
+        // Skips if player is dead
         if (isDead) return;
 
-        Debug.Log("Taking damage");
         currentHealth -= damageAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        // Updates player health in scene manager
         SceneManagerScript.instance.playerHealth = currentHealth;
 
         if (currentHealth <= 0)
@@ -87,18 +99,26 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    // Handles healing player for set amount
     public void Heal(float healAmount)
     {
+        // Skip if player is dead
         if (isDead) return;
+
         StartCoroutine(PerformHeal(healAmount));
     }
 
+    // Handles the healing logic
     private IEnumerator PerformHeal(float healAmount)
     {
         audioSource.PlayOneShot(healAudio);
+
         currentHealth += healAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        // Updates player health in scene manager
         SceneManagerScript.instance.playerHealth = currentHealth;
+
         healEffect.Play();
 
         yield return new WaitForSeconds(0.5f);
@@ -106,6 +126,7 @@ public class PlayerHealth : MonoBehaviour
         healEffect.Stop();
     }
 
+    // Listens for key press to use health potion
     private void PotionHeal()
     {
         if (Input.GetKeyDown(KeyCode.Q) && !isPotionOnCooldown)
@@ -113,20 +134,27 @@ public class PlayerHealth : MonoBehaviour
             if (SceneManagerScript.instance.numOfHealthPotions > 0 && currentHealth != maxHealth)
             {
                 Heal(PotionHealAmount);
+
+                // Update player health in scene manager
                 SceneManagerScript.instance.numOfHealthPotions -= 1;
+
                 StartCoroutine(PotionCooldown());
             }
         }
     }
 
+    // Handles potion use cooldown
     private IEnumerator PotionCooldown()
     {
         cooldownBG.gameObject.SetActive(true);
         isPotionOnCooldown = true;
+
+        // Used to track cooldown time
         float elapsedTime = 0f;
 
         while (elapsedTime < potionCooldown)
         {
+            // Updates the UI countdown text
             elapsedTime += Time.deltaTime;
             float remainingTime = potionCooldown - elapsedTime;
             potionCooldownText.text = Mathf.Ceil(remainingTime).ToString();
@@ -134,35 +162,40 @@ public class PlayerHealth : MonoBehaviour
             yield return null;
         }
 
+        // Reset cooldown UI elements
         potionCooldownText.text = "";
         isPotionOnCooldown = false;
         cooldownBG.gameObject.SetActive(false);
     }
 
+    // Handles player death logic
     public void HandleDeath()
     {
+        // Skip if player is already dead
         if (isDead) return;
+        
         isDead = true;
-
-        Debug.Log("Player has died.");
 
         if (animator != null)
         {
             animator.SetTrigger("Death");
         }
 
+        // Disable player Movement
         PlayerMovement playerMovement = GetComponent<PlayerMovement>();
         if (playerMovement != null)
         {
             playerMovement.enabled = false;
         }
 
+        // Disable player controller
         PlayerController playerController = GetComponent<PlayerController>();
         if (playerController != null)
         {
             playerController.enabled = false;
         }
 
+        // Disables player input actions
         var playerInput = GetComponent<UnityEngine.InputSystem.PlayerInput>();
         if (playerInput != null)
         {
@@ -170,14 +203,16 @@ public class PlayerHealth : MonoBehaviour
             playerInput.enabled = false;
         }
 
-        if (deathText != null)
+        // Display gameover text
+        if (gameoverText != null)
         {
-            deathText.gameObject.SetActive(true);
+            gameoverText.gameObject.SetActive(true);
         }
 
         StartCoroutine(GoToMainMenuAfterDelay());
     }
 
+    // Adds a delay after death before returning to main menu
     private IEnumerator GoToMainMenuAfterDelay()
     {
         yield return new WaitForSeconds(deathMessageDelay);
