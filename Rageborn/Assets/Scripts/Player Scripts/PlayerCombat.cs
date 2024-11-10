@@ -32,22 +32,25 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private TextMeshProUGUI spinAttackCooldownText;
     [SerializeField] private Image spinAttackCooldownImage;
     [SerializeField] private Image basicAttackCooldownImage;
-    private PlayerController playerController;
-    private Rigidbody rb;
-    private Animator animator;
+
     private bool isAttacking = false;
     private bool isSpinAttacking = false;
     private bool isSpinAttackOnCooldown = false;
+
     private int attackIndex = 0;
-    private readonly string[] attacks = { "isAttacking1", "isAttacking2", "isAttacking3" };
-    private PlayerControls playerControls;
     private int currentAttackDamage;
 
+    private readonly string[] attacks = { "isAttacking1", "isAttacking2", "isAttacking3" };
+
+    private PlayerControls playerControls;
+    private PlayerController playerController;
+    private Animator animator;
+
+    // Initializes references, sets up default UI states, and disables the weapon collider
     private void Awake()
     {
         playerController = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody>();
 
         playerControls = new PlayerControls();
 
@@ -63,6 +66,7 @@ public class PlayerCombat : MonoBehaviour
         basicAttackCooldownImage.gameObject.SetActive(false);
     }
 
+    // Enables player input controls and binds attack actions to input events
     private void OnEnable()
     {
         playerControls.Player.Enable();
@@ -70,6 +74,7 @@ public class PlayerCombat : MonoBehaviour
         playerControls.Player.SpinAttack.performed += SpinAttack;
     }
 
+    // Disables player input controls and unbinds attack actions to avoid memory leaks
     private void OnDisable()
     {
         if (playerControls != null)
@@ -80,6 +85,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Updates the spin attack UI element based on the player's stamina and cooldown status
     private void Update()
     {
         if (!playerController.playerStamina.CanConsumeStamina(spinAttackStaminaCost))
@@ -92,6 +98,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Handles the spin attack input, starting the spin attack if conditions are met
     private void SpinAttack(InputAction.CallbackContext context)
     {
         if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) return;
@@ -103,6 +110,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Performs the spin attack, applies cooldown, and manages related animations and audio
     private IEnumerator PerformSpinAttack()
     {
         spinAttackCooldownImage.gameObject.SetActive(true);
@@ -140,6 +148,7 @@ public class PlayerCombat : MonoBehaviour
         StartCoroutine(SpinAttackCooldownCountdown());
     }
 
+    // Handles the countdown for the spin attack's cooldown and updates the UI
     private IEnumerator SpinAttackCooldownCountdown()
     {
         float elapsedTime = 0f;
@@ -158,6 +167,7 @@ public class PlayerCombat : MonoBehaviour
         isSpinAttackOnCooldown = false;
     }
 
+    // Handles the normal attack input, starting the attack if conditions are met
     private void Attack(InputAction.CallbackContext context)
     {
         if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) return;
@@ -169,6 +179,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Executes the normal attack, plays the attack animation and sound, and manages cooldowns
     private IEnumerator PerformAttack()
     {
         basicAttackCooldownImage.gameObject.SetActive(true);
@@ -194,6 +205,7 @@ public class PlayerCombat : MonoBehaviour
         playerController.playerAudio.ResumeFootsteps();
     }
 
+    // Enables the weapon collider for detecting hits on enemies during an attack
     private void EnableWeaponCollider()
     {
         if (weaponCollider != null)
@@ -202,6 +214,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Disables the weapon collider to prevent unintended hits outside of an attack
     private void DisableWeaponCollider()
     {
         if (weaponCollider != null)
@@ -210,6 +223,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Detects collisions with enemies when the weapon collider is active and applies damage
     private void OnTriggerEnter(Collider other)
     {
         if ((other.CompareTag("Enemy") || other.CompareTag("RangedEnemy")) && weaponCollider.enabled)
@@ -237,11 +251,13 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Returns whether a normal attack is currently active
     public bool GetAttackStatus()
     {
         return isAttacking;
     }
 
+    // Returns whether a spin attack is currently active
     public bool GetSpinAttackStatus()
     {
         return isSpinAttacking;
