@@ -370,7 +370,7 @@ MonoBehaviour:
   lineOfSightAngle: 75
   attackRange: 1.56
   attackCooldown: 1
-  attackDamage: 10
+  attackDamage: 5
   weaponCollider: {fileID: 681713499592741567}
   audioSource: {fileID: 771644890812905083}
   attackSound: {fileID: 8300000, guid: 87829d59623854673bdd1606fdf5582f, type: 3}

@@ -12,6 +12,7 @@ public class SpikeTrap : MonoBehaviour
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        audioSource.volume = 0.25f;
     }
     private void OnTriggerEnter(Collider collider)
     {

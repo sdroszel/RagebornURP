@@ -9,22 +9,34 @@ public class PlayerHealth : MonoBehaviour
 {
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
+    [SerializeField] private float PotionHealAmount = 15f;
     [SerializeField] private Image healthBarFill;
     [SerializeField] private ParticleSystem healEffect;
+    [SerializeField] private AudioClip healAudio;
+    [SerializeField] private AudioSource audioSource;
+
+    [Header("Potion Cooldown Settings")]
+    [SerializeField] private float potionCooldown = 5f;
+    [SerializeField] private TextMeshProUGUI potionCooldownText;
+    [SerializeField] private Image cooldownBG;
+
     [Header("Death Settings")]
     [SerializeField] private TextMeshProUGUI deathText;
     [SerializeField] private float deathMessageDelay = 2f;
 
 
+    private bool isPotionOnCooldown = false;
     private float currentHealth;
     private bool isDead = false;
     private UnityEngine.InputSystem.PlayerInput playerInput;
     private Animator animator;
-
     public bool IsDead => isDead;
 
     private void Awake()
     {
+        potionCooldownText.text = "";
+        cooldownBG.gameObject.SetActive(false);
+
         healEffect.Stop();
         currentHealth = SceneManagerScript.instance.playerHealth;
 
@@ -83,6 +95,7 @@ public class PlayerHealth : MonoBehaviour
 
     private IEnumerator PerformHeal(float healAmount)
     {
+        audioSource.PlayOneShot(healAudio);
         currentHealth += healAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
         SceneManagerScript.instance.playerHealth = currentHealth;
@@ -95,17 +108,38 @@ public class PlayerHealth : MonoBehaviour
 
     private void PotionHeal()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q) && !isPotionOnCooldown)
         {
             if (SceneManagerScript.instance.numOfHealthPotions > 0 && currentHealth != maxHealth)
             {
-                Heal(15);
+                Heal(PotionHealAmount);
                 SceneManagerScript.instance.numOfHealthPotions -= 1;
+                StartCoroutine(PotionCooldown());
             }
         }
     }
 
-    private void HandleDeath()
+    private IEnumerator PotionCooldown()
+    {
+        cooldownBG.gameObject.SetActive(true);
+        isPotionOnCooldown = true;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < potionCooldown)
+        {
+            elapsedTime += Time.deltaTime;
+            float remainingTime = potionCooldown - elapsedTime;
+            potionCooldownText.text = Mathf.Ceil(remainingTime).ToString();
+
+            yield return null;
+        }
+
+        potionCooldownText.text = "";
+        isPotionOnCooldown = false;
+        cooldownBG.gameObject.SetActive(false);
+    }
+
+    public void HandleDeath()
     {
         if (isDead) return;
         isDead = true;

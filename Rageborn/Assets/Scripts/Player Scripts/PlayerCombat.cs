@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -25,6 +27,11 @@ public class PlayerCombat : MonoBehaviour
     [Header("Audio Sources")]
     [SerializeField] private AudioSource attackAudioSource;
     [SerializeField] private AudioSource footstepAudioSource;
+
+    [Header("UI Elements")]
+    [SerializeField] private TextMeshProUGUI spinAttackCooldownText;
+    [SerializeField] private Image spinAttackCooldownImage;
+    [SerializeField] private Image basicAttackCooldownImage;
     private PlayerController playerController;
     private Rigidbody rb;
     private Animator animator;
@@ -50,6 +57,10 @@ public class PlayerCombat : MonoBehaviour
         }
 
         DisableWeaponCollider();
+
+        spinAttackCooldownText.text = "";
+        spinAttackCooldownImage.gameObject.SetActive(false);
+        basicAttackCooldownImage.gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -69,6 +80,18 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (!playerController.playerStamina.CanConsumeStamina(spinAttackStaminaCost))
+        {
+            spinAttackCooldownImage.gameObject.SetActive(true);
+        }
+        else if (playerController.playerStamina.CanConsumeStamina(spinAttackStaminaCost) && !isSpinAttackOnCooldown)
+        {
+            spinAttackCooldownImage.gameObject.SetActive(false);
+        }
+    }
+
     private void SpinAttack(InputAction.CallbackContext context)
     {
         if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) return;
@@ -82,6 +105,8 @@ public class PlayerCombat : MonoBehaviour
 
     private IEnumerator PerformSpinAttack()
     {
+        spinAttackCooldownImage.gameObject.SetActive(true);
+
         playerController.playerStamina.ConsumeStamina(spinAttackStaminaCost);
 
         playerController.playerAudio.StopFootsteps();
@@ -112,7 +137,24 @@ public class PlayerCombat : MonoBehaviour
 
         playerController.playerAudio.ResumeFootsteps();
 
-        yield return new WaitForSeconds(spinAttackCooldown);
+        StartCoroutine(SpinAttackCooldownCountdown());
+    }
+
+    private IEnumerator SpinAttackCooldownCountdown()
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < spinAttackCooldown)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float remainingTime = spinAttackCooldown - elapsedTime;
+            spinAttackCooldownText.text = Mathf.Ceil(remainingTime).ToString();
+
+            yield return null;
+        }
+
+        spinAttackCooldownText.text = "";
+        spinAttackCooldownImage.gameObject.SetActive(false);
         isSpinAttackOnCooldown = false;
     }
 
@@ -129,6 +171,7 @@ public class PlayerCombat : MonoBehaviour
 
     private IEnumerator PerformAttack()
     {
+        basicAttackCooldownImage.gameObject.SetActive(true);
         playerController.playerAudio.StopFootsteps();
 
         footstepAudioSource.pitch = 0.5f;
@@ -142,7 +185,7 @@ public class PlayerCombat : MonoBehaviour
         isAttacking = true;
 
         yield return new WaitForSeconds(attackTime);
-
+        basicAttackCooldownImage.gameObject.SetActive(false);
         isAttacking = false;
         animator.SetBool(attacks[attackIndex], false);
 
@@ -169,13 +212,27 @@ public class PlayerCombat : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy") && weaponCollider.enabled)
+        if ((other.CompareTag("Enemy") || other.CompareTag("RangedEnemy")) && weaponCollider.enabled)
         {
-            EnemyController enemy = other.GetComponent<EnemyController>();
-            if (enemy != null)
+            if (other.CompareTag("Enemy"))
             {
-                enemy.TakeDamage(currentAttackDamage);
-                attackAudioSource.PlayOneShot(hitSound);
+                EnemyController enemy = other.GetComponent<EnemyController>();
+
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(currentAttackDamage);
+                    attackAudioSource.PlayOneShot(hitSound);
+                }
+            }
+            else
+            {
+                CasterEnemyController enemy = other.GetComponent<CasterEnemyController>();
+
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(currentAttackDamage);
+                    attackAudioSource.PlayOneShot(hitSound);
+                }
             }
         }
     }

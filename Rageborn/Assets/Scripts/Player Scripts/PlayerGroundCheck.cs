@@ -1,24 +1,19 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 public class PlayerGroundCheck : MonoBehaviour
 {
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float isGroundedDelay = 0.2f;
-    public UnityEvent OnLand;
+    [SerializeField] private float groundCheckRadius = 0.5f; // Adjust this based on character size
+    [SerializeField] private float groundOffset = 0.1f; // Offset to position the check slightly above the player's feet
     private bool isGrounded;
     private float delayTimer;
 
     private void FixedUpdate()
     {
-        bool wasGrounded = isGrounded;
         CheckGroundStatus();
 
-        if (!wasGrounded && isGrounded)
-        {
-            OnLand?.Invoke();
-        }
-
+        // Update delay timer to smooth ground detection if needed
         if (isGrounded)
         {
             delayTimer = isGroundedDelay;
@@ -31,8 +26,9 @@ public class PlayerGroundCheck : MonoBehaviour
 
     private void CheckGroundStatus()
     {
-        Vector3 rayOrigin = transform.position + Vector3.up * 0.1f;
-        isGrounded = Physics.Raycast(rayOrigin, Vector3.down, 0.6f, groundLayer);
+        // Use CheckSphere instead of SphereCast for simpler ground detection
+        Vector3 checkPosition = transform.position + Vector3.up * groundOffset;
+        isGrounded = Physics.CheckSphere(checkPosition, groundCheckRadius, groundLayer);
     }
 
     public bool IsGrounded()
