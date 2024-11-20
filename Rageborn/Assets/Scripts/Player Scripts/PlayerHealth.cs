@@ -25,13 +25,15 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gameoverText;
     [SerializeField] private float deathMessageDelay = 2f;
 
+    [Header("Rage Settings")]
+    [SerializeField] private float rageOnDamage = 3f; // Amount of rage added when taking damage
 
     private bool isPotionOnCooldown = false;
     private bool isDead = false;
     private float currentHealth;
-    
-    private UnityEngine.InputSystem.PlayerInput playerInput;
     private Animator animator;
+
+    private PlayerRage playerRage; // Reference to the PlayerRage script
 
     public bool IsDead => isDead;
 
@@ -51,13 +53,20 @@ public class PlayerHealth : MonoBehaviour
             gameoverText.gameObject.SetActive(false);
         }
 
-        playerInput = GetComponent<UnityEngine.InputSystem.PlayerInput>();
         animator = GetComponent<Animator>();
+
+        // Get the PlayerRage component
+        playerRage = GetComponent<PlayerRage>();
+        if (playerRage == null)
+        {
+            Debug.LogError("PlayerRage component is missing!");
+        }
     }
 
     // Disables player input
     private void OnDisable()
     {
+        var playerInput = GetComponent<UnityEngine.InputSystem.PlayerInput>();
         if (playerInput != null)
         {
             playerInput.actions.Disable();
@@ -92,6 +101,12 @@ public class PlayerHealth : MonoBehaviour
 
         // Updates player health in scene manager
         SceneManagerScript.instance.playerHealth = currentHealth;
+
+        // Add rage when taking damage
+        if (playerRage != null)
+        {
+            playerRage.AddRage(rageOnDamage);
+        }
 
         if (currentHealth <= 0)
         {
@@ -173,7 +188,7 @@ public class PlayerHealth : MonoBehaviour
     {
         // Skip if player is already dead
         if (isDead) return;
-        
+
         isDead = true;
 
         if (animator != null)
