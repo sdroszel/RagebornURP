@@ -77,35 +77,6 @@ public class PlayerRage : MonoBehaviour
             UpdateRageBar();  // Update the rage bar as it drains
             yield return null;  // Wait until the next frame
         }
-
-        if (currentRage <= 0)
-        {
-            DeactivateRage();  // Deactivate rage when it drains completely
-        }
-    }
-
-    // Method to deactivate rage (e.g., when rage runs out or the player presses 'R' again)
-    public void DeactivateRage()
-    {
-        if (!isRageActive) return;  // Don't deactivate if rage isn't active
-
-        isRageActive = false;
-
-        // Stop the draining coroutine when rage is deactivated
-        if (rageDrainCoroutine != null)
-        {
-            StopCoroutine(rageDrainCoroutine);
-        }
-
-        // Reset the buffs (e.g., decrease movement speed and damage)
-        PlayerController playerController = GetComponent<PlayerController>();
-        if (playerController != null)
-        {
-            playerController.playerMovement.CurrentMoveSpeed /= 1.10f;  // Reset movement speed
-            playerController.playerCombat.IncreaseDamage(1.50f);  // Example: Reset damage
-        }
-
-        Debug.Log("Rage Deactivated!");  // Debug Log to confirm deactivation
     }
 
     // Optional method to reset rage (e.g., when the player dies)

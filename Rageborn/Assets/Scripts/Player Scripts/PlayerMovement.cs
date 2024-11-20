@@ -89,10 +89,6 @@ public class PlayerMovement : MonoBehaviour
         playerRage.ActivateRage();
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && playerRage.IsRageActive())
-        {
-        playerRage.DeactivateRage();
-        }
     }
 
     // Update for character movement
