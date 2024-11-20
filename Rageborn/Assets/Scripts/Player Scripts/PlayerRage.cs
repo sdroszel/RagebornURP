@@ -11,7 +11,7 @@ public class PlayerRage : MonoBehaviour
 
     [Header("Rage Activation Settings")]
     [SerializeField] private float rageActivationThreshold = 75f; // Threshold for activating rage
-    [SerializeField] private float rageDrainSpeed = 2f;  // How fast rage drains per second when activated
+    [SerializeField] private float rageDrainSpeed = 5f;  // How much rage drains per second when activated
 
     private bool isRageActive = false;
     private Coroutine rageDrainCoroutine;  // Reference to the running coroutine
@@ -45,7 +45,7 @@ public class PlayerRage : MonoBehaviour
         return isRageActive;  // Returns whether rage is active
     }
 
-    // Optional method to activate rage, providing buffs when rage is full
+    // Activate rage, providing buffs when rage is full
     public void ActivateRage()
     {
         if (!IsRageFull()) return;  // Don't activate if rage isn't full
@@ -72,14 +72,44 @@ public class PlayerRage : MonoBehaviour
     {
         while (isRageActive && currentRage > 0)
         {
-            currentRage -= rageDrainSpeed * Time.deltaTime;  // Drain rage based on the drain speed
+            currentRage -= rageDrainSpeed;  // Drain a fixed amount of rage per second
             currentRage = Mathf.Clamp(currentRage, 0, maxRage);  // Ensure rage doesn't go below 0
             UpdateRageBar();  // Update the rage bar as it drains
-            yield return null;  // Wait until the next frame
+
+            if (currentRage <= 0)
+            {
+                DeactivateRage();  // Stop rage when it reaches 0
+            }
+
+            yield return new WaitForSeconds(1f);  // Wait for 1 second between each drain
         }
     }
 
-    // Optional method to reset rage (e.g., when the player dies)
+    // Deactivate rage when it ends or is manually stopped
+    public void DeactivateRage()
+    {
+        if (!isRageActive) return;
+
+        isRageActive = false;
+
+        // Stop the coroutine if it's running
+        if (rageDrainCoroutine != null)
+        {
+            StopCoroutine(rageDrainCoroutine);
+        }
+
+        // Reset any applied buffs (example)
+        PlayerController playerController = GetComponent<PlayerController>();
+        if (playerController != null)
+        {
+            playerController.playerMovement.CurrentMoveSpeed /= 1.10f;  // Reset movement speed
+            playerController.playerCombat.IncreaseDamage(1f);  // Reset damage multiplier to default
+        }
+
+        Debug.Log("Rage Deactivated!");  // Debug Log to confirm deactivation
+    }
+
+    // Reset rage (e.g., on death or other conditions)
     public void ResetRage()
     {
         currentRage = 0;

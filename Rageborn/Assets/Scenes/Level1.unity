@@ -6436,6 +6436,8 @@ MonoBehaviour:
   maxRage: 75
   currentRage: 0
   rageBarFill: {fileID: 765761296}
+  rageActivationThreshold: 75
+  rageDrainSpeed: 2
 --- !u!1001 &1940166353
 PrefabInstance:
   m_ObjectHideFlags: 0

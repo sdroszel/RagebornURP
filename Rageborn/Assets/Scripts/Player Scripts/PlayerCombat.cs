@@ -92,6 +92,7 @@ public class PlayerCombat : MonoBehaviour
     public void IncreaseDamage(float multiplier)
     {
         damageMultiplier = multiplier; // Update the damage multiplier
+        Debug.Log("Damage Multiplier Updated: " + damageMultiplier); // Log the current multiplier
     }
 
     // Modify how damage is calculated in attacks
@@ -149,7 +150,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (!isSpinAttackOnCooldown && playerController.playerStamina.CanConsumeStamina(spinAttackStaminaCost))
         {
-            currentAttackDamage = spinAttackDamage;
+            currentAttackDamage = playerRage.IsRageActive() ? Mathf.RoundToInt(spinAttackDamage * 1.5f) : spinAttackDamage;
             StartCoroutine(PerformSpinAttack());
         }
        
@@ -240,7 +241,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (context.performed && !isAttacking)
         {
-            currentAttackDamage = normalAttackDamage;
+            currentAttackDamage = playerRage.IsRageActive() ? Mathf.RoundToInt(normalAttackDamage * 1.5f) : normalAttackDamage;
             StartCoroutine(PerformAttack());
         }
 
@@ -348,6 +349,7 @@ public class PlayerCombat : MonoBehaviour
                 playerRage.AddRage(ragePerEnemyHit);  // Add rage points on attack
                 }
             }
+           
         }
     }
 
