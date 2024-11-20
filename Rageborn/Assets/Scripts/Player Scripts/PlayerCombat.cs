@@ -84,7 +84,27 @@ public class PlayerCombat : MonoBehaviour
         spinAttackCooldownImage.gameObject.SetActive(false);
         basicAttackCooldownImage.gameObject.SetActive(false);
     }
+    
+    // Variable to track damage multiplier
+    private float damageMultiplier = 1f;
 
+    // Add a method to increase the damage based on rage or other factors
+    public void IncreaseDamage(float multiplier)
+    {
+        damageMultiplier = multiplier; // Update the damage multiplier
+    }
+
+    // Modify how damage is calculated in attacks
+    public int GetNormalAttackDamage()
+    {
+        return Mathf.RoundToInt(normalAttackDamage * damageMultiplier);
+    }
+
+    // Similarly, modify the spin attack damage if needed
+    public int GetSpinAttackDamage()
+    {
+        return Mathf.RoundToInt(spinAttackDamage * damageMultiplier);
+    }
 
     // Enables player input controls and binds attack actions to input events
     private void OnEnable()

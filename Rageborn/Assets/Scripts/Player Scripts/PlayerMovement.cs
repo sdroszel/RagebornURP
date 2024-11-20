@@ -22,11 +22,11 @@ public class PlayerMovement : MonoBehaviour
     private PlayerController playerController;
     private Rigidbody rb;
     private Animator animator;
-
+    private PlayerCombat playerCombat;
     private Vector2 moveInput;
 
     private float adjustedMoveSpeed;
-
+    private PlayerRage playerRage;
     // Gets needed components and sets default movement speed
     private void Awake()
     {
@@ -37,6 +37,8 @@ public class PlayerMovement : MonoBehaviour
         adjustedMoveSpeed = walkSpeed;
 
         playerControls = new PlayerControls();
+        playerRage = GetComponent<PlayerRage>();
+        playerCombat = GetComponent<PlayerCombat>(); // Get PlayerCombat component
     }
 
     // Enables player input controls
@@ -75,6 +77,21 @@ public class PlayerMovement : MonoBehaviour
         {
             // Shows sprint cooldown UI if player is out of stamina
             cooldownBG.gameObject.SetActive(true);
+        }
+
+       // Check if the R key is pressed and rage is full
+        if (playerRage.IsRageActive())
+        {
+            Debug.Log("Rage is active!");
+        }
+        if (Input.GetKeyDown(KeyCode.R) && playerRage.IsRageFull())
+        {
+        playerRage.ActivateRage();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) && playerRage.IsRageActive())
+        {
+        playerRage.DeactivateRage();
         }
     }
 
