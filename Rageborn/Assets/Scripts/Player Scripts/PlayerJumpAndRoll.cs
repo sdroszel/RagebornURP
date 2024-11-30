@@ -130,7 +130,7 @@ public class PlayerJumpAndRoll : MonoBehaviour
     private void OnRollPerformed(InputAction.CallbackContext context)
     {
         // Skip is player is dead or game is paused
-        if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused) return;
+        if (playerController.playerHealth.IsDead || PauseMenuScript.isGamePaused || !playerMovement.IsMoving()) return;
 
         if (playerController.groundCheck.IsGrounded() && canRoll && playerController.playerStamina.CanConsumeStamina(rollStaminaCost))
         {
@@ -143,9 +143,9 @@ public class PlayerJumpAndRoll : MonoBehaviour
     private IEnumerator PerformRoll()
     {
         rollCooldownImage.gameObject.SetActive(true);
-        
+
         playerController.playerStamina.ConsumeStamina(rollStaminaCost);
-        
+
         playerController.playerAudio.StopFootsteps();
 
         IsRolling = true;
@@ -180,7 +180,7 @@ public class PlayerJumpAndRoll : MonoBehaviour
         yield return new WaitForSeconds(rollTime);
 
         canRoll = true;
-        
+
         rollCooldownImage.gameObject.SetActive(false);
     }
 }

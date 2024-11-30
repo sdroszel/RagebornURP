@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -37,6 +38,11 @@ public class SceneManagerScript : MonoBehaviour
     {
         if (scene.buildIndex == 0)
         {
+            playerHealth = 100;
+            numOfHealthPotions = 5;
+            numOfStaminaPotions = 3;
+            remainingTime = 300;
+
             UnlockAndShowCursor();
             AssignMainMenuButtonEvents();
         }
@@ -81,10 +87,7 @@ public class SceneManagerScript : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        playerHealth = 100;
-        numOfHealthPotions = 5;
-        numOfStaminaPotions = 3;
-        remainingTime = 300;
+
         StartCoroutine(FadeAndLoadScene(0));
     }
 

@@ -41,6 +41,7 @@ public class EnemyController : MonoBehaviour
 
     [Header("Health Settings")]
     [SerializeField] private int maxHealth = 100;
+    [SerializeField] private bool isBoss = false;
     private int currentHealth;
 
     private int currentWaypointIndex = 0;
@@ -49,7 +50,7 @@ public class EnemyController : MonoBehaviour
     private bool canAttack = true;
     private bool isDead = false;
     private Animator animator;
-    
+
 
     private void Awake()
     {
@@ -291,6 +292,11 @@ public class EnemyController : MonoBehaviour
         if (audioSource != null) audioSource.Stop();
 
         isChasing = false;
+
+        if (isBoss)
+        {
+            FindObjectOfType<CompleteGame>().ReturnToMainMenu();
+        }
     }
 
     private void OnDrawGizmosSelected()

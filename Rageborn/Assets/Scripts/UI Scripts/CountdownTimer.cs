@@ -12,7 +12,7 @@ public class CountdownTimer : MonoBehaviour
 
     private float remainingTime;
 
-    private void Start()
+    private void Awake()
     {
         remainingTime = SceneManagerScript.instance.remainingTime;
     }
@@ -38,7 +38,7 @@ public class CountdownTimer : MonoBehaviour
         else
         {
             timerText.text = "00:00";
-            
+
             playerHealth.HandleDeath();
         }
     }
