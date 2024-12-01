@@ -73,9 +73,9 @@ public class PlayerRage : MonoBehaviour
         while (isRageActive && currentRage > 0)
         {
             if (PauseMenuScript.isGamePaused)
-        {
-            yield return new WaitUntil(() => !PauseMenuScript.isGamePaused);  // Wait until the game is unpaused
-        }
+            {
+                yield return new WaitUntil(() => !PauseMenuScript.isGamePaused);  // Wait until the game is unpaused
+            }
             currentRage -= rageDrainSpeed;  // Drain a fixed amount of rage per second
             currentRage = Mathf.Clamp(currentRage, 0, maxRage);  // Ensure rage doesn't go below 0
             UpdateRageBar();  // Update the rage bar as it drains
