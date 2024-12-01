@@ -17,12 +17,12 @@ public class PlayerStamina : MonoBehaviour
     [SerializeField] private float replenishAmount = 1f;
     [SerializeField] private AudioClip staminaAudio;
     [SerializeField] private AudioSource audioSource;
-    
+
     [Header("Potion Cooldown Settings")]
     [SerializeField] private float potionCooldown = 5f;
     [SerializeField] private TextMeshProUGUI potionCooldownText;
     [SerializeField] private Image cooldownBG;
-    
+
     private bool isPotionOnCooldown = false;
     private bool sprintDisabled;
 
@@ -100,6 +100,11 @@ public class PlayerStamina : MonoBehaviour
     // Handles stamina potion use
     private void PotionStamina()
     {
+        if (Time.timeScale == 0)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.F) && !isPotionOnCooldown)
         {
             if (SceneManagerScript.instance.numOfStaminaPotions > 0 && currentStaminaAmount != maxStamina)

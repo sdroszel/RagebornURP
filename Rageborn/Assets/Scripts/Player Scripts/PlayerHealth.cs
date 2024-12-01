@@ -31,6 +31,8 @@ public class PlayerHealth : MonoBehaviour
     private bool isPotionOnCooldown = false;
     private bool isDead = false;
     private float currentHealth;
+
+    private UnityEngine.InputSystem.PlayerInput playerInput;
     private Animator animator;
 
     private PlayerRage playerRage; // Reference to the PlayerRage script
@@ -144,6 +146,11 @@ public class PlayerHealth : MonoBehaviour
     // Listens for key press to use health potion
     private void PotionHeal()
     {
+        if (Time.timeScale == 0)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Q) && !isPotionOnCooldown)
         {
             if (SceneManagerScript.instance.numOfHealthPotions > 0 && currentHealth != maxHealth)
