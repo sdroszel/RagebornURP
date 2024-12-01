@@ -262,6 +262,11 @@ public class CasterEnemyController : MonoBehaviour
 
         isPlayerDetected = false;
     }
+    
+    public bool IsDead()
+    {
+    return isDead;
+    }
 
     // Used is editor to see the FOV and detection proximity
     private void OnDrawGizmosSelected()

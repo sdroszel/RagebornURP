@@ -316,42 +316,38 @@ public class PlayerCombat : MonoBehaviour
      
     // Detects collisions with enemies when the weapon collider is active and applies damage
     private void OnTriggerEnter(Collider other)
+{
+    // Check if the collider is an enemy (either normal or ranged)
+    if ((other.CompareTag("Enemy") || other.CompareTag("RangedEnemy")) && weaponCollider.enabled)
     {
-        if ((other.CompareTag("Enemy") || other.CompareTag("RangedEnemy")) && weaponCollider.enabled)
+        if (other.CompareTag("Enemy"))
         {
-            if (other.CompareTag("Enemy"))
+            EnemyController enemy = other.GetComponent<EnemyController>();
+            if (enemy != null && !enemy.IsDead())  // Check if the enemy is alive
             {
-                EnemyController enemy = other.GetComponent<EnemyController>();
-
-
-                if (enemy != null)
-                {
-                    enemy.TakeDamage(currentAttackDamage);
-                    attackAudioSource.PlayOneShot(hitSound);
-                }
+                enemy.TakeDamage(currentAttackDamage);
+                attackAudioSource.PlayOneShot(hitSound);
                 if (playerRage != null)
                 {
-                playerRage.AddRage(ragePerEnemyHit);  // Add rage points on attack
+                    playerRage.AddRage(ragePerEnemyHit);  // Add rage only if the enemy is alive
                 }
             }
-            else
+        }
+        else
+        {
+            CasterEnemyController enemy = other.GetComponent<CasterEnemyController>();
+            if (enemy != null && !enemy.IsDead())  // Check if the enemy is alive
             {
-                CasterEnemyController enemy = other.GetComponent<CasterEnemyController>();
-
-
-                if (enemy != null)
-                {
-                    enemy.TakeDamage(currentAttackDamage);
-                    attackAudioSource.PlayOneShot(hitSound);
-                }
+                enemy.TakeDamage(currentAttackDamage);
+                attackAudioSource.PlayOneShot(hitSound);
                 if (playerRage != null)
                 {
-                playerRage.AddRage(ragePerEnemyHit);  // Add rage points on attack
+                    playerRage.AddRage(ragePerEnemyHit);  // Add rage only if the enemy is alive
                 }
             }
-           
         }
     }
+}
 
 
     // Returns whether a normal attack is currently active

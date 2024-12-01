@@ -6433,11 +6433,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474eca6ea901ada4cbc66a45b3d140ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxRage: 75
+  maxRage: 70
   currentRage: 0
   rageBarFill: {fileID: 765761296}
-  rageActivationThreshold: 75
-  rageDrainSpeed: 2
+  rageActivationThreshold: 70
+  rageDrainSpeed: 7
 --- !u!1001 &1940166353
 PrefabInstance:
   m_ObjectHideFlags: 0

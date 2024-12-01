@@ -5,13 +5,13 @@ using System.Collections;
 public class PlayerRage : MonoBehaviour
 {
     [Header("Rage Settings")]
-    [SerializeField] private float maxRage = 75f;    // Maximum Rage value
+    [SerializeField] private float maxRage = 70f;    // Maximum Rage value
     [SerializeField] private float currentRage = 0f;  // Current Rage value
     [SerializeField] private Image rageBarFill;       // Image to represent the Rage bar
 
     [Header("Rage Activation Settings")]
-    [SerializeField] private float rageActivationThreshold = 75f; // Threshold for activating rage
-    [SerializeField] private float rageDrainSpeed = 5f;  // How much rage drains per second when activated
+    [SerializeField] private float rageActivationThreshold = 70f; // Threshold for activating rage
+    [SerializeField] private float rageDrainSpeed = 7f;  // How much rage drains per second when activated
 
     private bool isRageActive = false;
     private Coroutine rageDrainCoroutine;  // Reference to the running coroutine
@@ -72,6 +72,10 @@ public class PlayerRage : MonoBehaviour
     {
         while (isRageActive && currentRage > 0)
         {
+            if (PauseMenuScript.isGamePaused)
+        {
+            yield return new WaitUntil(() => !PauseMenuScript.isGamePaused);  // Wait until the game is unpaused
+        }
             currentRage -= rageDrainSpeed;  // Drain a fixed amount of rage per second
             currentRage = Mathf.Clamp(currentRage, 0, maxRage);  // Ensure rage doesn't go below 0
             UpdateRageBar();  // Update the rage bar as it drains

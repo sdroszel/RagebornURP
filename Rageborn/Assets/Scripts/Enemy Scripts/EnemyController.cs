@@ -234,7 +234,12 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-
+    // New method to check if the enemy is dead
+    public bool IsDead()
+    {
+        return isDead;
+    }
+    
     public void EnableWeaponCollider()
     {
         if (!isDead)
