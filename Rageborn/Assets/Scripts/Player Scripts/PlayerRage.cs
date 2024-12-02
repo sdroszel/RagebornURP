@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using TMPro;
 
 public class PlayerRage : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class PlayerRage : MonoBehaviour
     [SerializeField] private float maxRage = 70f;    // Maximum Rage value
     [SerializeField] private float currentRage = 0f;  // Current Rage value
     [SerializeField] private Image rageBarFill;       // Image to represent the Rage bar
+    [SerializeField] private ParticleSystem rageState;
+    [SerializeField] GameObject rageFullText;
+    [SerializeField] AudioClip rageActivatedAudio;
 
     [Header("Rage Activation Settings")]
     [SerializeField] private float rageActivationThreshold = 70f; // Threshold for activating rage
@@ -16,9 +20,36 @@ public class PlayerRage : MonoBehaviour
     private bool isRageActive = false;
     private Coroutine rageDrainCoroutine;  // Reference to the running coroutine
 
+    private PlayerAudio playerAudio;
+
+    private void Start()
+    {
+        rageState.Stop();
+        rageFullText.gameObject.SetActive(false);
+
+        playerAudio = GetComponent<PlayerAudio>();
+    }
+
+    private void Update()
+    {
+        if (IsRageFull())
+        {
+            rageFullText.gameObject.SetActive(true);
+        }
+        else
+        {
+            rageFullText.gameObject.SetActive(false);
+        }
+    }
+
     // Method to add rage
     public void AddRage(float amount)
     {
+        if (isRageActive)
+        {
+            return;
+        }
+
         currentRage += amount;
         currentRage = Mathf.Clamp(currentRage, 0, maxRage);  // Ensure rage stays within the max rage limit
         UpdateRageBar();
@@ -53,7 +84,10 @@ public class PlayerRage : MonoBehaviour
         if (isRageActive) return;  // Don't activate if rage is already active
 
         isRageActive = true;
-        Debug.Log("Rage Activated!");  // Debug Log to confirm activation
+
+        rageState.Play();
+
+        playerAudio.AudioSource.PlayOneShot(rageActivatedAudio);
 
         // Start the drain coroutine when rage is activated
         rageDrainCoroutine = StartCoroutine(DrainRageOverTime());
@@ -82,7 +116,7 @@ public class PlayerRage : MonoBehaviour
 
             if (currentRage <= 0)
             {
-                DeactivateRage();  // Stop rage when it reaches 0
+                StartCoroutine(DeactivateRage());  // Stop rage when it reaches 0
             }
 
             yield return new WaitForSeconds(1f);  // Wait for 1 second between each drain
@@ -90,11 +124,15 @@ public class PlayerRage : MonoBehaviour
     }
 
     // Deactivate rage when it ends or is manually stopped
-    public void DeactivateRage()
+    public IEnumerator DeactivateRage()
     {
-        if (!isRageActive) return;
+        yield return new WaitForSeconds(0.5f);
+
+        if (!isRageActive) yield break;
 
         isRageActive = false;
+
+        rageState.Stop();
 
         // Stop the coroutine if it's running
         if (rageDrainCoroutine != null)
